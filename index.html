@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlexisLeroi | TryHackMe Dashboard v2.0.1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════ LOADING SCREEN ══════════════════ -->
+  <div id="loading-screen">
+
+    <!-- ── PHASE 1 : Boot rapide ── -->
+    <div id="boot-phase">
+      <div class="boot-top-bar">
+        <span class="boot-distro">Kali GNU/Linux Rolling</span>
+        <span class="boot-kern">Kernel 6.11.0-kali9-amd64  #1 SMP PREEMPT_DYNAMIC</span>
+      </div>
+      <div id="bios-log"></div>
+      <div class="bios-progress-wrap">
+        <div id="bios-bar"></div>
+        <div id="bios-percent">0%</div>
+      </div>
+    </div>
+
+    <!-- ── PHASE 2 : Écran de connexion Kali ── -->
+    <div id="login-phase">
+
+      <!-- Particules d'arrière-plan -->
+      <canvas id="login-particles"></canvas>
+
+      <!-- Logo Kali Dragon -->
+      <div class="kali-logo-wrap">
+        <!-- Halo de glow derrière l'image -->
+        <div class="dragon-halo"></div>
+        <!-- Anneaux orbitants -->
+        <div class="dragon-ring dragon-ring-1"></div>
+        <div class="dragon-ring dragon-ring-2"></div>
+        <!-- Image icons8 du dragon Kali -->
+        <img
+          id="kali-dragon-img"
+          class="kali-dragon"
+          src="https://img.icons8.com/?size=160&id=qBWtR72kluCU&format=png&color=FFFFFF"
+          alt="Kali Dragon"
+        />
+        <!-- Particules d'énergie orbitales (canvas) -->
+        <canvas id="dragon-orbit-canvas" width="260" height="260"></canvas>
+      </div>
+
+      <!-- Nom distro -->
+      <div class="kali-distro-name">Kali GNU/Linux</div>
+      <div class="kali-version">Rolling 2026.1 &nbsp;&#9632;&nbsp; Kernel 6.11</div>
+
+      <!-- Boîte de connexion -->
+      <div class="login-box" id="login-box">
+
+        <!-- Avatar -->
+        <div class="user-avatar-wrap">
+          <div class="user-avatar">
+            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+              <circle cx="20" cy="15" r="10" fill="#2a6dd9"/>
+              <path d="M4 38 Q4 26 20 26 Q36 26 36 38Z" fill="#2a6dd9"/>
+            </svg>
+          </div>
+          <div class="user-avatar-ring"></div>
+        </div>
+
+        <!-- Champ username -->
+        <div class="login-input-group" id="lg-user">
+          <div class="login-label">Utilisateur</div>
+          <div class="login-input-wrap">
+            <input type="text" id="login-user" class="login-input" autocomplete="off" readonly placeholder=""/>
+            <span class="login-cursor" id="user-cursor">&#9646;</span>
+          </div>
+        </div>
+
+        <!-- Champ password -->
+        <div class="login-input-group" id="lg-pass" style="opacity:0;transform:translateY(8px)">
+          <div class="login-label">Mot de passe</div>
+          <div class="login-input-wrap">
+            <input type="password" id="login-pass" class="login-input" autocomplete="off" readonly placeholder=""/>
+            <span class="login-cursor" id="pass-cursor" style="display:none">&#9646;</span>
+          </div>
+        </div>
+
+        <!-- Bouton -->
+        <button class="login-btn" id="login-btn" style="opacity:0;transform:scale(0.9)">
+          <span id="login-btn-text">Ouvrir la session</span>
+          <svg class="btn-arrow" viewBox="0 0 20 20" width="16" height="16">
+            <polyline points="6,4 14,10 6,16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <!-- Status -->
+        <div class="login-status" id="login-status"></div>
+      </div>
+
+      <!-- Footer login -->
+      <div class="login-footer-bar">
+        <span>&#9632; alexisleroi@kali</span>
+        <span>Session: <strong>root</strong></span>
+        <span>TTY&nbsp;1</span>
+        <span id="login-clock"></span>
+      </div>
+
+    </div><!-- /login-phase -->
+  </div><!-- /loading-screen -->
+
+  <!-- ══════════════════ MATRIX CANVAS ══════════════════ -->
+  <canvas id="matrix-canvas"></canvas>
+
+  <!-- ══════════════════ BACKGROUND HUD ══════════════════ -->
+  <div id="bg-hud">
+    <div class="hud-panel" id="hud-scan">
+      <div class="hud-title">&#9632; NETWORK SCANNER</div>
+      <div id="scan-lines"></div>
+    </div>
+    <div class="hud-panel" id="hud-brute">
+      <div class="hud-title">&#9632; BRUTEFORCE MODULE</div>
+      <div id="brute-lines"></div>
+    </div>
+    <div class="hud-panel" id="hud-world">
+      <div class="hud-title">&#9632; GLOBAL ATTACK MAP</div>
+      <svg id="world-svg" viewBox="0 0 240 120" fill="none">
+        <rect width="240" height="120" fill="#050510"/>
+        <line x1="0" y1="30"  x2="240" y2="30"  stroke="#0a1020" stroke-width="0.5"/>
+        <line x1="0" y1="60"  x2="240" y2="60"  stroke="#0a1020" stroke-width="0.5"/>
+        <line x1="0" y1="90"  x2="240" y2="90"  stroke="#0a1020" stroke-width="0.5"/>
+        <line x1="60"  y1="0" x2="60"  y2="120" stroke="#0a1020" stroke-width="0.5"/>
+        <line x1="120" y1="0" x2="120" y2="120" stroke="#0a1020" stroke-width="0.5"/>
+        <line x1="180" y1="0" x2="180" y2="120" stroke="#0a1020" stroke-width="0.5"/>
+        <ellipse cx="50"  cy="55" rx="28" ry="22" fill="#0d1a0d" stroke="#00ff4122" stroke-width="0.5"/>
+        <ellipse cx="115" cy="40" rx="35" ry="18" fill="#0d1a0d" stroke="#00ff4122" stroke-width="0.5"/>
+        <ellipse cx="160" cy="58" rx="25" ry="16" fill="#0d1a0d" stroke="#00ff4122" stroke-width="0.5"/>
+        <ellipse cx="200" cy="65" rx="22" ry="28" fill="#0d1a0d" stroke="#00ff4122" stroke-width="0.5"/>
+        <ellipse cx="90"  cy="80" rx="15" ry="10" fill="#0d1a0d" stroke="#00ff4122" stroke-width="0.5"/>
+        <!-- Attack points -->
+        <circle class="attack-point"        cx="195" cy="45" r="4" fill="#ff003c" stroke="#ff003c66" stroke-width="8" stroke-opacity="0.3"/>
+        <circle class="attack-point delay1" cx="118" cy="35" r="4" fill="#00f3ff" stroke="#00f3ff66" stroke-width="8" stroke-opacity="0.3"/>
+        <circle class="attack-point delay2" cx="50"  cy="48" r="4" fill="#00ff41" stroke="#00ff4166" stroke-width="8" stroke-opacity="0.3"/>
+        <circle class="attack-point delay3" cx="160" cy="42" r="4" fill="#ffe600" stroke="#ffe60066" stroke-width="8" stroke-opacity="0.3"/>
+        <!-- Connections -->
+        <line x1="195" y1="45" x2="118" y2="35" stroke="#ff003c44" stroke-width="0.8" stroke-dasharray="4,3"/>
+        <line x1="118" y1="35" x2="50"  y2="48" stroke="#00f3ff33" stroke-width="0.8" stroke-dasharray="4,3"/>
+        <line x1="160" y1="42" x2="195" y2="45" stroke="#ffe60033" stroke-width="0.8" stroke-dasharray="4,3"/>
+        <!-- Labels -->
+        <text x="198" y="40" fill="#ff003c99" font-size="6" font-family="monospace">New York</text>
+        <text x="121" y="30" fill="#00f3ff99" font-size="6" font-family="monospace">London</text>
+        <text x="32"  y="44" fill="#00ff4199" font-size="6" font-family="monospace">Moscow</text>
+        <text x="162" y="38" fill="#ffe60099" font-size="6" font-family="monospace">Tokyo</text>
+      </svg>
+    </div>
+    <div class="hud-panel" id="hud-radar">
+      <div class="hud-title">&#9632; SIGNAL RADAR</div>
+      <canvas id="radar-canvas" width="140" height="140"></canvas>
+    </div>
+  </div>
+
+  <!-- ══════════════════ MAIN APP ══════════════════ -->
+  <div id="app">
+
+    <!-- HEADER -->
+    <header id="site-header">
+      <div class="header-label">&#9724; TRYHACKME OPERATOR PROFILE &#9724;</div>
+      <div class="level-badge" id="level-badge">&#9632;&nbsp;[0x6]&nbsp;VOYAGER&nbsp;&#9632;</div>
+      <div id="glitch-title" data-text="ALEXISLEROI // TRYHACKME">ALEXISLEROI // TRYHACKME</div>
+      <div class="header-sub">
+        Certified Pentester in training &bull; <span>[0x6] VOYAGER</span> &bull; &#127467;&#127479;
+      </div>
+      <div class="header-badge">&#9632; SESSION ACTIVE &#9632; TOP 20% GLOBAL &#9632; 3 ROOMS → NEXT BADGE &#9632;</div>
+      <div class="header-quote">&#9658;&nbsp;Hack the planet! &bull; One room at a time</div>
+    </header>
+
+    <div id="main-body">
+
+      <!-- ══════ SIDEBAR ══════ -->
+      <nav id="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">&#9642; NAVIGATION</div>
+          <div class="nav-item active" onclick="setNav(this)">
+            <span class="icon">&#9635;</span> Dashboard
+          </div>
+          <div class="nav-item" onclick="setNav(this)">
+            <span class="icon">&#9881;</span> Machines
+          </div>
+          <div class="nav-item" onclick="setNav(this)">
+            <span class="icon">&#9878;</span> Modules
+          </div>
+          <div class="nav-item" onclick="setNav(this)">
+            <span class="icon">&#127942;</span> Certifications
+          </div>
+          <div class="nav-item" onclick="setNav(this)">
+            <span class="icon">&#127947;</span> Badges
+          </div>
+          <div class="nav-item" onclick="setNav(this)">
+            <span class="icon">&#9881;</span> Param&egrave;tres
+          </div>
+          <button class="btn-attack" onclick="startAttack()">
+            &#9658; START NEW ATTACK
+          </button>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">&#9642; LIVE STATS</div>
+          <div class="live-stat"><span>Active sessions</span><span class="val">3</span></div>
+          <div class="live-stat"><span>Root access</span><span class="val warn">2 / 5</span></div>
+          <div class="live-stat"><span>Exploits loaded</span><span class="val">12</span></div>
+          <div class="live-stat"><span>Network status</span><span class="val">ONLINE</span></div>
+          <div class="live-stat"><span>VPN</span><span class="val">&#9632; ACTIVE</span></div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">&#9642; TERMINAL</div>
+          <div id="mini-terminal">
+            <div class="term-prompt">alexisleroi@thm:~#</div>
+            <div class="cmd-line" id="tc0">nmap -sV 10.10.45.89</div>
+            <div class="cmd-line" id="tc1">hydra -l admin -P rockyou.txt ssh</div>
+            <div class="cmd-line" id="tc2">gobuster dir -u http://target</div>
+            <div class="cmd-line"><span class="cursor-blink">_</span></div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ══════ CONTENT ══════ -->
+      <main id="content">
+
+        <!-- STAT CARDS -->
+        <div class="cards-row">
+          <div class="stat-card">
+            <div class="card-icon">&#9635;</div>
+            <div class="card-label">Rooms Completed</div>
+            <div class="card-value green" id="cnt-rooms">0</div>
+            <div class="card-sub">/ 150 total</div>
+            <div class="hash-val" id="hash-rooms">HASH: 0x...</div>
+            <div class="card-led"></div>
+          </div>
+          <div class="stat-card">
+            <div class="card-icon">&#128737;</div>
+            <div class="card-label">Badges Earned</div>
+            <div class="card-value" id="cnt-badges">0</div>
+            <div class="card-sub">achievements unlocked</div>
+            <div class="hash-val" id="hash-badges">HASH: 0x...</div>
+            <div class="card-led" style="animation-delay:.5s"></div>
+          </div>
+          <div class="stat-card">
+            <div class="card-icon">&#9733;</div>
+            <div class="card-label">Global Rank</div>
+            <div class="card-value yellow" id="cnt-rank">0</div>
+            <div class="card-sub">global percentile</div>
+            <div class="hash-val">HASH: 0xA3F2...</div>
+            <div class="card-led" style="background:#ffe600;box-shadow:0 0 8px #ffe600;animation-delay:1s"></div>
+          </div>
+          <div class="stat-card">
+            <div class="card-icon">&#128293;</div>
+            <div class="card-label">Current Streak</div>
+            <div class="card-value flame-val">
+              <span class="flame">&#128293;</span><span id="cnt-streak">0</span>
+            </div>
+            <div class="card-sub">days in a row 🔥</div>
+            <div class="hash-val">HASH: 0x1E5D...</div>
+            <div class="card-led" style="background:#ff6b35;box-shadow:0 0 8px #ff6b35;animation-delay:1.5s"></div>
+          </div>
+        </div>
+
+        <!-- SKILLS + CERTIFICATIONS -->
+        <div class="two-col">
+
+          <!-- SKILL MATRIX -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title panel-title-green">&#9635; SKILL MATRIX</span>
+              <div class="panel-dot"></div>
+            </div>
+            <div id="skills-chart-wrap">
+              <div class="skill-bar-row">
+                <div class="skill-name">&#9670; Web Exploitation</div>
+                <div class="skill-track"><div class="skill-fill blue"   id="sk-web"    style="width:0%"></div></div>
+                <div class="skill-pct">82%</div>
+              </div>
+              <div class="skill-bar-row">
+                <div class="skill-name">&#9670; Network Hacking</div>
+                <div class="skill-track"><div class="skill-fill green"  id="sk-net"    style="width:0%"></div></div>
+                <div class="skill-pct">75%</div>
+              </div>
+              <div class="skill-bar-row">
+                <div class="skill-name">&#9670; Cryptography</div>
+                <div class="skill-track"><div class="skill-fill pink"   id="sk-crypto" style="width:0%"></div></div>
+                <div class="skill-pct">60%</div>
+              </div>
+              <div class="skill-bar-row">
+                <div class="skill-name">&#9670; Forensics</div>
+                <div class="skill-track"><div class="skill-fill yellow" id="sk-for"    style="width:0%"></div></div>
+                <div class="skill-pct">53%</div>
+              </div>
+              <div class="skill-bar-row">
+                <div class="skill-name">&#9670; Reverse Engineering</div>
+                <div class="skill-track"><div class="skill-fill red"    id="sk-rev"    style="width:0%"></div></div>
+                <div class="skill-pct">41%</div>
+              </div>
+              <div class="level-gauge-wrap">
+                <div class="level-label">
+                <span><strong>37 / 100</strong> rooms completed</span>
+                <span>37% to Next Level</span>
+              </div>
+              <div class="level-track"><div class="level-fill" style="width:37%"></div></div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="radarChart"></canvas>
+            </div>
+          </div>
+
+          <!-- CERTIFICATIONS -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">&#127942; CERTIFICATIONS &amp; BADGES</span>
+              <div class="panel-dot"></div>
+            </div>
+
+            <!-- OFFICIAL THM BADGE IFRAME -->
+            <div class="thm-iframe-wrap">
+              <div class="thm-iframe-label">&#9642; LIVE THM PROFILE — AlexisLeroi</div>
+              <iframe
+                src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=7087670"
+                style="border:none; width:100%; height:200px;"
+                title="TryHackMe Badges - AlexisLeroi"
+                loading="lazy">
+              </iframe>
+              <div class="milestone-bar">
+                <span class="mile-icon">&#9658;</span>
+                <span class="mile-text">Next milestone: <strong>50 rooms</strong> &bull; 13 more to go!</span>
+                <span class="mile-badge">3 rooms → next badge</span>
+              </div>
+            </div>
+
+            <!-- CUSTOM CERT CARDS -->
+            <div class="cert-grid">
+              <div class="cert-card" onclick="showCert('Jr. Penetration Tester','IN PROGRESS','20%','—','~6 weeks left','THM-JRPT-PENDING')">
+                <div class="cert-badge-icon">&#127942;</div>
+                <div class="cert-name">Jr. Penetration Tester</div>
+                <span class="cert-status wip">&#9632; IN PROGRESS</span>
+                <div class="cert-progress-track"><div class="cert-progress-fill blue" id="cp-jrpt" style="width:0%"></div></div>
+                <div class="cert-pct">20% complete</div>
+                <div class="cert-hash">Block: PENDING...</div>
+              </div>
+              <div class="cert-card earned" onclick="showCert('Pre-Security','EARNED','100%','2026-03-14','2 weeks','THM-PRESEC-A3B0')">
+                <div class="cert-badge-icon">&#128737;</div>
+                <div class="cert-name">Pre-Security</div>
+                <span class="cert-status done">&#9632; EARNED</span>
+                <div class="cert-progress-track"><div class="cert-progress-fill" style="width:100%"></div></div>
+                <div class="cert-pct">100% &mdash; Completed</div>
+                <div class="cert-hash">Block: 0xA3B0...9C44</div>
+              </div>
+              <div class="cert-card" onclick="showCert('SOC Level 1','IN PROGRESS','65%','—','~3 weeks left','THM-SOC1-PENDING')">
+                <div class="cert-badge-icon">&#128270;</div>
+                <div class="cert-name">SOC Level 1</div>
+                <span class="cert-status wip">&#9632; IN PROGRESS</span>
+                <div class="cert-progress-track"><div class="cert-progress-fill blue" id="cp-soc" style="width:0%"></div></div>
+                <div class="cert-pct">65% complete</div>
+                <div class="cert-hash">Block: PENDING...</div>
+              </div>
+              <div class="cert-card" onclick="showCert('Web Fundamentals','IN PROGRESS','45%','—','~3 weeks left','THM-WEBFUND-PENDING')">
+                <div class="cert-badge-icon">&#127760;</div>
+                <div class="cert-name">Web Fundamentals</div>
+                <span class="cert-status wip">&#9632; IN PROGRESS</span>
+                <div class="cert-progress-track"><div class="cert-progress-fill blue" id="cp-web" style="width:0%"></div></div>
+                <div class="cert-pct">45% complete</div>
+                <div class="cert-hash">Block: PENDING...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MACHINES + ACTIVITY -->
+        <div class="three-col">
+
+          <!-- MACHINES TABLE -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">&#9881; RECENT MACHINES</span>
+              <div class="panel-dot"></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Machine</th><th>Difficulty</th><th>Status</th><th>Date</th><th>TTR</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>MrRobot</td>    <td><span class="diff-badge diff-medium">MEDIUM</span></td><td><span class="status-root">&#9632; ROOT</span></td>  <td>2026-03-13</td><td>45 min</td></tr>
+                  <tr><td>Blue</td>        <td><span class="diff-badge diff-easy">EASY</span></td>    <td><span class="status-root">&#9632; ROOT</span></td>  <td>2026-03-12</td><td>22 min</td></tr>
+                  <tr><td>Relevant</td>    <td><span class="diff-badge diff-medium">MEDIUM</span></td><td><span class="status-user">&#9632; USER</span></td>  <td>2026-03-11</td><td>1h 10m</td></tr>
+                  <tr><td>Brainpan</td>    <td><span class="diff-badge diff-hard">HARD</span></td>    <td><span class="status-root">&#9632; ROOT</span></td>  <td>2026-03-10</td><td>2h 05m</td></tr>
+                  <tr><td>Anthem</td>      <td><span class="diff-badge diff-easy">EASY</span></td>    <td><span class="status-root">&#9632; ROOT</span></td>  <td>2026-03-09</td><td>35 min</td></tr>
+                  <tr><td>Skynet</td>      <td><span class="diff-badge diff-medium">MEDIUM</span></td><td><span class="status-user">&#9632; USER</span></td>  <td>2026-03-08</td><td>55 min</td></tr>
+                  <tr><td>Overpass</td>    <td><span class="diff-badge diff-medium">MEDIUM</span></td><td><span class="status-none">&#9632; PENDING</span></td><td>—</td>         <td>—</td></tr>
+                  <tr><td>Pickle Rick</td> <td><span class="diff-badge diff-easy">EASY</span></td>    <td><span class="status-root">&#9632; ROOT</span></td>  <td>2026-03-07</td><td>18 min</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ACTIVITY + DEBUG -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title panel-title-green">&#9642; LIVE ACTIVITY</span>
+              <div class="panel-dot"></div>
+            </div>
+            <div id="activity-feed">
+              <div class="activity-item act-new">
+                <span class="act-time">[21:37:42]</span>
+                <span class="act-icon">&#9876;</span>
+                <span class="act-text">Rooted <strong>MrRobot</strong> in 45min</span>
+              </div>
+              <div class="activity-item">
+                <span class="act-time">[20:15:11]</span>
+                <span class="act-icon">&#9989;</span>
+                <span class="act-text">Completed <strong>OWASP Top 10</strong> module</span>
+              </div>
+              <div class="activity-item">
+                <span class="act-time">[18:44:03]</span>
+                <span class="act-icon">&#127942;</span>
+                <span class="act-text">Earned badge <strong>Buffer Overflow King</strong></span>
+              </div>
+              <div class="activity-item">
+                <span class="act-time">[16:30:59]</span>
+                <span class="act-icon">&#9650;</span>
+                <span class="act-text">Ranked up to <strong>Level 7</strong></span>
+              </div>
+              <div class="activity-item">
+                <span class="act-time">[14:22:37]</span>
+                <span class="act-icon">&#9876;</span>
+                <span class="act-text">Rooted <strong>Blue</strong> (EternalBlue) 22min</span>
+              </div>
+              <div class="activity-item">
+                <span class="act-time">[12:05:18]</span>
+                <span class="act-icon">&#128272;</span>
+                <span class="act-text">Cracked <strong>MD5 hash</strong> via hashcat</span>
+              </div>
+            </div>
+            <!-- DEBUG CONSOLE -->
+            <div class="debug-section">
+              <div class="debug-label">&#9642; DEBUG CONSOLE</div>
+              <div id="debug-console">
+                <div class="debug-line">
+                  <span class="ts">[00:00:00]</span>
+                  <span class="mod">[INIT]</span>
+                  <span class="msg">Dashboard loaded successfully</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /three-col -->
+
+      </main>
+    </div><!-- /main-body -->
+
+    <!-- ══════════════════ FOOTER ══════════════════ -->
+    <footer id="site-footer">
+      <div class="footer-stats">
+        <div class="footer-stat">
+          <span class="fv">37</span>
+          <span class="fl">Rooms completed</span>
+        </div>
+        <div class="footer-stat">
+          <span class="fv">6</span>
+          <span class="fl">Badges earned</span>
+        </div>
+        <div class="footer-stat">
+          <span class="fv" style="color:var(--neon-green)">0x25</span>
+          <span class="fl">Rooms (hex)</span>
+        </div>
+      </div>
+      <div class="footer-mid">
+        <a href="https://tryhackme.com/p/AlexisLeroi" target="_blank" rel="noopener">&#9654; View THM Profile — AlexisLeroi &#127467;&#127479;</a>
+        <div class="footer-msg">&#9632; Stay anonymous &bull; Keep hacking &bull; [0x6] VOYAGER &#9632;</div>
+        <div class="footer-ver">v2.0.1 &mdash; Kali Rolling &nbsp;|&nbsp; <span id="footer-date">2026-03-14</span></div>
+      </div>
+      <div class="footer-stats">
+        <div class="footer-stat">
+          <span class="fv" style="color:var(--neon-green)">6</span>
+          <span class="fl">Day streak 🔥</span>
+        </div>
+        <div class="footer-stat">
+          <span class="fv" style="color:var(--neon-yellow)">Top 20%</span>
+          <span class="fl">Global rank</span>
+        </div>
+        <div class="footer-stat">
+          <span class="fv" style="color:var(--neon-pink)">[0x6]</span>
+          <span class="fl">Voyager level</span>
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- /app -->
+
+  <!-- ══════════════════ CERT MODAL ══════════════════ -->
+  <div class="cert-detail-overlay" id="cert-overlay">
+    <div class="cert-detail-box">
+      <div class="cert-detail-close" onclick="hideCert()">&#10005;</div>
+      <div class="cert-detail-title" id="cd-title">—</div>
+      <div class="cert-detail-row"><span class="key">Status</span>       <span class="val" id="cd-status">—</span></div>
+      <div class="cert-detail-row"><span class="key">Progress</span>      <span class="val" id="cd-progress">—</span></div>
+      <div class="cert-detail-row"><span class="key">Completed</span>     <span class="val" id="cd-date">—</span></div>
+      <div class="cert-detail-row"><span class="key">Time invested</span> <span class="val" id="cd-time">—</span></div>
+      <div class="cert-detail-row"><span class="key">Credential ID</span><span class="val small" id="cd-id">—</span></div>
+      <div class="cert-blockchain" id="cd-block">BLOCKCHAIN: 0x0000...0000</div>
+      <div class="cert-qr-wrap">
+        <canvas id="qr-canvas" width="60" height="60"></canvas>
+        <div class="cert-qr-label">Scan QR to verify<br>credential authenticity</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE SIDEBAR TOGGLE -->
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <button id="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
