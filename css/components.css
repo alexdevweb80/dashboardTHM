@@ -1,0 +1,478 @@
+/* =========================================
+   3. DASHBOARD CONTENT & WIDGETS
+   ========================================= */
+
+/* Section Headers */
+.section-header {
+    margin-bottom: 2rem;
+}
+
+.section-header h1 {
+    font-size: 2rem;
+    font-family: var(--font-mono);
+    color: #fff;
+    font-weight: 400;
+}
+
+.section-header h1 span {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Glassmorphism Cards */
+.glass-effect {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Presentation / Welcome Card */
+.presentation-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.presentation-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--kali-blue);
+    box-shadow: 0 0 15px var(--kali-blue);
+}
+
+.card-content h2 {
+    color: #fff;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.card-content p {
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin-bottom: 2rem;
+}
+
+.progress-stats {
+    display: flex;
+    gap: 3rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stat-item .label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+.bar-bg {
+    width: 200px;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--kali-blue), var(--plasma-cyan));
+    box-shadow: 0 0 10px var(--plasma-cyan);
+}
+
+.stat-item .value {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.stat-item .value.highlight {
+    color: var(--hacker-green);
+    text-shadow: 0 0 5px rgba(0,255,0,0.5);
+}
+
+.card-visual {
+    font-size: 8rem;
+    color: rgba(255,255,255,0.03);
+    position: absolute;
+    right: -20px;
+    bottom: -30px;
+    transform: rotate(-15deg);
+}
+
+/* Dashboard Grid System */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.widget {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.widget.full-width {
+    grid-column: 1 / -1;
+}
+
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+.widget-header h3 {
+    font-size: 1.1rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.widget-header h3 i {
+    color: var(--plasma-cyan);
+}
+
+.view-all {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.view-all:hover {
+    color: var(--plasma-cyan);
+}
+
+/* Badges Widget Details */
+.badges-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 1rem;
+    justify-items: center;
+}
+
+.badge-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.badge-item i {
+    font-size: 2rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border-color);
+    transition: var(--transition-normal);
+}
+
+.badge-item span {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
+/* Badge Rarities */
+.badge-item.rare i {
+    color: var(--plasma-cyan);
+    border-color: rgba(0,229,255,0.3);
+    box-shadow: inset 0 0 15px rgba(0,229,255,0.1);
+}
+
+.badge-item.epic i {
+    color: #a855f7;
+    border-color: rgba(168,85,247,0.3);
+    box-shadow: inset 0 0 15px rgba(168,85,247,0.1);
+}
+
+.badge-item.common i {
+    color: #94a3b8;
+}
+
+.badge-item.locked i {
+    color: var(--text-muted);
+    border-style: dashed;
+    opacity: 0.5;
+}
+
+.badge-item:hover:not(.locked) i {
+    transform: translateY(-5px) scale(1.1);
+}
+
+/* Rooms List Details */
+.rooms-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.room-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--border-radius-md);
+    border: 1px solid transparent;
+    transition: var(--transition-fast);
+}
+
+.room-item:hover {
+    background: rgba(255,255,255,0.03);
+    border-color: var(--border-color);
+}
+
+.room-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.room-name {
+    color: #fff;
+    font-weight: 500;
+    font-family: var(--font-mono);
+}
+
+.room-diff {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    width: fit-content;
+}
+
+.room-diff.easy { background: rgba(0,255,0,0.1); color: var(--hacker-green); }
+.room-diff.medium { background: rgba(255,165,0,0.1); color: orange; }
+.room-diff.hard { background: rgba(255,42,42,0.1); color: var(--kali-accent); }
+
+.room-item .status {
+    font-size: 0.85rem;
+    font-family: var(--font-mono);
+}
+
+.room-item.pwned .status { color: var(--kali-accent); }
+.room-item.active .status { color: var(--plasma-cyan); }
+.room-item.pending .status { color: var(--text-muted); }
+
+/* Certifications Timeline */
+.cert-timeline {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-left: 20px;
+    gap: 1.5rem;
+}
+
+.cert-timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 6px;
+    width: 2px;
+    height: 100%;
+    background: var(--border-color);
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline-item .node {
+    position: absolute;
+    left: -20px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--kali-bg);
+    border: 2px solid var(--text-muted);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+.timeline-item .node i {
+    font-size: 0.5rem;
+    color: #fff;
+}
+
+.timeline-item.completed .node {
+    background: var(--hacker-green);
+    border-color: var(--hacker-green);
+    box-shadow: 0 0 10px rgba(0,255,0,0.4);
+}
+
+.timeline-item.active .node {
+    background: transparent;
+    border-color: var(--plasma-cyan);
+}
+
+.timeline-item.active .node.pulsing {
+    animation: pulseCyan 2s infinite;
+}
+
+@keyframes pulseCyan {
+    0% { box-shadow: 0 0 0 0 rgba(0,229,255,0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(0,229,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,229,255,0); }
+}
+
+.timeline-item .content h4 {
+    color: #fff;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-item .content p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* =========================================
+   CERTIFICATIONS WIDGET - PDF CARD
+   ========================================= */
+
+.split-widget {
+    grid-column: span 1; /* Reset if previously expanded */
+}
+
+@media (min-width: 1024px) {
+    .split-widget {
+        grid-column: span 2; /* Span full width on large screens to fit both */
+    }
+}
+
+.cert-split-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .cert-split-layout {
+        flex-direction: row;
+    }
+    
+    .cert-split-layout .cert-timeline {
+        flex: 1;
+    }
+    
+    .cert-split-layout .cert-document-card {
+        flex: 1.5; /* Give more space to PDF */
+    }
+}
+
+.cert-document-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.doc-header {
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.doc-header h4 {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.doc-header h4 i {
+    color: var(--kali-accent);
+}
+
+.completed-badge {
+    background: rgba(0, 255, 0, 0.1);
+    color: var(--hacker-green);
+    border: 1px solid var(--hacker-green);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.doc-viewer {
+    height: 350px;
+    width: 100%;
+    background: #2a2a2a; /* Neutral grey for loading state */
+}
+
+/* Internal fix to prevent PDF plugins from exceeding borders */
+.doc-viewer embed {
+    border: none;
+    outline: none;
+}
+
+.doc-footer {
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.4);
+    border-top: 1px solid var(--border-color);
+    text-align: right;
+}
+
+.cyber-btn-small {
+    display: inline-block;
+    padding: 6px 15px;
+    background: transparent;
+    color: var(--plasma-cyan);
+    border: 1px solid var(--plasma-cyan);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.cyber-btn-small:hover {
+    background: var(--plasma-cyan);
+    color: #000;
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+}

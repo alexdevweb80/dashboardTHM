@@ -1,0 +1,249 @@
+/* =========================================
+   5. RADWARE STYLE MAP WIDGET
+   ========================================= */
+
+.attack-map-widget.radware-style {
+    min-height: 550px;
+    display: flex;
+    flex-direction: column;
+}
+
+.glitch-header {
+    position: relative;
+}
+
+.glitch-header h3 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--kali-accent);
+    text-shadow: 0 0 10px rgba(255, 42, 42, 0.5);
+    animation: textGlitch 3s infinite;
+}
+
+@keyframes textGlitch {
+    0% { transform: translate(0) }
+    2% { transform: translate(-2px, 1px) }
+    4% { transform: translate(2px, -1px) }
+    6% { transform: translate(0) }
+    100% { transform: translate(0) }
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--hacker-green);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.live-indicator .dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--hacker-green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--hacker-green);
+}
+
+.live-indicator .dot.blink {
+    animation: blinkFast 1s infinite;
+}
+
+@keyframes blinkFast {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+}
+
+.attack-map-container {
+    flex: 1;
+    position: relative;
+    background: #050b14; /* Deep navy blue, more Radware style */
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Base Map styling - Leaflet Engine */
+.cyber-map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #050b14; /* Deep navy background for tiles to rest on */
+    z-index: 1;
+}
+
+/* Make Leaflet tiles cyberpunk */
+.leaflet-tile {
+    /* Apply a deep blue/cyan retro look to the black/white CartoDB tiles */
+    filter: sepia(100%) hue-rotate(140deg) saturate(200%) brightness(50%) contrast(150%);
+}
+
+.map-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2; /* Ensure canvas sits above Leaflet */
+    pointer-events: none;
+}
+
+/* Stats Overlays */
+.map-stats-overlay {
+    position: absolute;
+    z-index: 10;
+    font-family: var(--font-sans);
+}
+
+.stats-top {
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 3rem;
+    background: transparent;
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #8b92a5;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    line-height: 1;
+    margin-top: 0.2rem;
+}
+
+.highlight-cyan {
+    color: #00e5ff;
+    text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+}
+
+.highlight-red {
+    color: #ff2a2a;
+    text-shadow: 0 0 15px rgba(255, 42, 42, 0.4);
+}
+
+.stats-left, .stats-right {
+    top: 6rem;
+    background: rgba(5, 11, 20, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-sm);
+    backdrop-filter: blur(5px);
+    width: 260px;
+}
+
+.stats-left { left: 1rem; }
+.stats-right { right: 1rem; }
+
+.map-stats-overlay h4 {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 0.5rem;
+    letter-spacing: 1px;
+}
+
+.map-stats-overlay ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.map-stats-overlay li {
+    font-size: 0.85rem;
+    color: #fff;
+    position: relative;
+    padding-bottom: 6px;
+}
+
+.flag {
+    margin-right: 6px;
+}
+
+.bar-graph {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--plasma-cyan);
+    width: var(--w);
+    border-radius: 2px;
+    box-shadow: 0 0 5px var(--plasma-cyan);
+}
+
+.bar-graph.red {
+    background: var(--kali-accent);
+    box-shadow: 0 0 5px var(--kali-accent);
+}
+
+/* Legend */
+.map-legend {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 2rem;
+    background: rgba(5, 11, 20, 0.8);
+    padding: 0.75rem 2rem;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fff;
+}
+
+.color-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.color-box.ddos { background: #ff2a2a; box-shadow: 0 0 8px #ff2a2a; }
+.color-box.scan { background: #00e5ff; box-shadow: 0 0 8px #00e5ff; }
+.color-box.web { background: #a855f7; box-shadow: 0 0 8px #a855f7; }
+
+/* Responsive Map Overlays */
+@media (max-width: 1200px) {
+    .stats-left, .stats-right {
+        width: 200px;
+        padding: 1rem;
+    }
+}
+@media (max-width: 768px) {
+    .stats-left, .stats-right {
+        display: none; /* Hide side panels on small screens to keep map visible */
+    }
+    .stats-top {
+        gap: 1.5rem;
+    }
+    .stat-value {
+        font-size: 1.8rem;
+    }
+}

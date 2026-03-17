@@ -1,525 +1,934 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AlexisLeroi | TryHackMe Dashboard v2.0.1</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlexisLeroi — Root Dashboard</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+    <!-- Dashboard Styles -->
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
+
 <body>
 
-  <!-- ══════════════════ LOADING SCREEN ══════════════════ -->
-  <div id="loading-screen">
+    <!-- ============================================================
+     LOGIN SCREEN
+     ============================================================ -->
+    <div id="boot-screen">
+        <!-- Fake Boot Sequence Terminal -->
+        <div id="boot-terminal" class="boot-terminal"></div>
 
-    <!-- ── PHASE 1 : Boot rapide ── -->
-    <div id="boot-phase">
-      <div class="boot-top-bar">
-        <span class="boot-distro">Kali GNU/Linux Rolling</span>
-        <span class="boot-kern">Kernel 6.11.0-kali9-amd64  #1 SMP PREEMPT_DYNAMIC</span>
-      </div>
-      <div id="bios-log"></div>
-      <div class="bios-progress-wrap">
-        <div id="bios-bar"></div>
-        <div id="bios-percent">0%</div>
-      </div>
-    </div>
-
-    <!-- ── PHASE 2 : Écran de connexion Kali ── -->
-    <div id="login-phase">
-
-      <!-- Particules d'arrière-plan -->
-      <canvas id="login-particles"></canvas>
-
-      <!-- Logo Kali Dragon -->
-      <div class="kali-logo-wrap">
-        <!-- Halo de glow derrière l'image -->
-        <div class="dragon-halo"></div>
-        <!-- Anneaux orbitants -->
-        <div class="dragon-ring dragon-ring-1"></div>
-        <div class="dragon-ring dragon-ring-2"></div>
-        <!-- Image icons8 du dragon Kali -->
-        <img
-          id="kali-dragon-img"
-          class="kali-dragon"
-          src="https://img.icons8.com/?size=160&id=qBWtR72kluCU&format=png&color=FFFFFF"
-          alt="Kali Dragon"
-        />
-        <!-- Particules d'énergie orbitales (canvas) -->
-        <canvas id="dragon-orbit-canvas" width="260" height="260"></canvas>
-      </div>
-
-      <!-- Nom distro -->
-      <div class="kali-distro-name">Kali GNU/Linux</div>
-      <div class="kali-version">Rolling 2026.1 &nbsp;&#9632;&nbsp; Kernel 6.11</div>
-
-      <!-- Boîte de connexion -->
-      <div class="login-box" id="login-box">
-
-        <!-- Avatar -->
-        <div class="user-avatar-wrap">
-          <div class="user-avatar">
-            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-              <circle cx="20" cy="15" r="10" fill="#2a6dd9"/>
-              <path d="M4 38 Q4 26 20 26 Q36 26 36 38Z" fill="#2a6dd9"/>
-            </svg>
-          </div>
-          <div class="user-avatar-ring"></div>
-        </div>
-
-        <!-- Champ username -->
-        <div class="login-input-group" id="lg-user">
-          <div class="login-label">Utilisateur</div>
-          <div class="login-input-wrap">
-            <input type="text" id="login-user" class="login-input" autocomplete="off" readonly placeholder=""/>
-            <span class="login-cursor" id="user-cursor">&#9646;</span>
-          </div>
-        </div>
-
-        <!-- Champ password -->
-        <div class="login-input-group" id="lg-pass" style="opacity:0;transform:translateY(8px)">
-          <div class="login-label">Mot de passe</div>
-          <div class="login-input-wrap">
-            <input type="password" id="login-pass" class="login-input" autocomplete="off" readonly placeholder=""/>
-            <span class="login-cursor" id="pass-cursor" style="display:none">&#9646;</span>
-          </div>
-        </div>
-
-        <!-- Bouton -->
-        <button class="login-btn" id="login-btn" style="opacity:0;transform:scale(0.9)">
-          <span id="login-btn-text">Ouvrir la session</span>
-          <svg class="btn-arrow" viewBox="0 0 20 20" width="16" height="16">
-            <polyline points="6,4 14,10 6,16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-        </button>
-
-        <!-- Status -->
-        <div class="login-status" id="login-status"></div>
-      </div>
-
-      <!-- Footer login -->
-      <div class="login-footer-bar">
-        <span>&#9632; alexisleroi@kali</span>
-        <span>Session: <strong>root</strong></span>
-        <span>TTY&nbsp;1</span>
-        <span id="login-clock"></span>
-      </div>
-
-    </div><!-- /login-phase -->
-  </div><!-- /loading-screen -->
-
-  <!-- ══════════════════ MATRIX CANVAS ══════════════════ -->
-  <canvas id="matrix-canvas"></canvas>
-
-  <!-- ══════════════════ BACKGROUND HUD ══════════════════ -->
-  <div id="bg-hud">
-    <div class="hud-panel" id="hud-scan">
-      <div class="hud-title">&#9632; NETWORK SCANNER</div>
-      <div id="scan-lines"></div>
-    </div>
-    <div class="hud-panel" id="hud-brute">
-      <div class="hud-title">&#9632; BRUTEFORCE MODULE</div>
-      <div id="brute-lines"></div>
-    </div>
-    <div class="hud-panel" id="hud-world">
-      <div class="hud-title">&#9632; GLOBAL ATTACK MAP</div>
-      <svg id="world-svg" viewBox="0 0 240 120" fill="none">
-        <rect width="240" height="120" fill="#050510"/>
-        <line x1="0" y1="30"  x2="240" y2="30"  stroke="#0a1020" stroke-width="0.5"/>
-        <line x1="0" y1="60"  x2="240" y2="60"  stroke="#0a1020" stroke-width="0.5"/>
-        <line x1="0" y1="90"  x2="240" y2="90"  stroke="#0a1020" stroke-width="0.5"/>
-        <line x1="60"  y1="0" x2="60"  y2="120" stroke="#0a1020" stroke-width="0.5"/>
-        <line x1="120" y1="0" x2="120" y2="120" stroke="#0a1020" stroke-width="0.5"/>
-        <line x1="180" y1="0" x2="180" y2="120" stroke="#0a1020" stroke-width="0.5"/>
-        <ellipse cx="50"  cy="55" rx="28" ry="22" fill="#0d1a0d" stroke="#00ff4122" stroke-width="0.5"/>
-        <ellipse cx="115" cy="40" rx="35" ry="18" fill="#0d1a0d" stroke="#00ff4122" stroke-width="0.5"/>
-        <ellipse cx="160" cy="58" rx="25" ry="16" fill="#0d1a0d" stroke="#00ff4122" stroke-width="0.5"/>
-        <ellipse cx="200" cy="65" rx="22" ry="28" fill="#0d1a0d" stroke="#00ff4122" stroke-width="0.5"/>
-        <ellipse cx="90"  cy="80" rx="15" ry="10" fill="#0d1a0d" stroke="#00ff4122" stroke-width="0.5"/>
-        <!-- Attack points -->
-        <circle class="attack-point"        cx="195" cy="45" r="4" fill="#ff003c" stroke="#ff003c66" stroke-width="8" stroke-opacity="0.3"/>
-        <circle class="attack-point delay1" cx="118" cy="35" r="4" fill="#00f3ff" stroke="#00f3ff66" stroke-width="8" stroke-opacity="0.3"/>
-        <circle class="attack-point delay2" cx="50"  cy="48" r="4" fill="#00ff41" stroke="#00ff4166" stroke-width="8" stroke-opacity="0.3"/>
-        <circle class="attack-point delay3" cx="160" cy="42" r="4" fill="#ffe600" stroke="#ffe60066" stroke-width="8" stroke-opacity="0.3"/>
-        <!-- Connections -->
-        <line x1="195" y1="45" x2="118" y2="35" stroke="#ff003c44" stroke-width="0.8" stroke-dasharray="4,3"/>
-        <line x1="118" y1="35" x2="50"  y2="48" stroke="#00f3ff33" stroke-width="0.8" stroke-dasharray="4,3"/>
-        <line x1="160" y1="42" x2="195" y2="45" stroke="#ffe60033" stroke-width="0.8" stroke-dasharray="4,3"/>
-        <!-- Labels -->
-        <text x="198" y="40" fill="#ff003c99" font-size="6" font-family="monospace">New York</text>
-        <text x="121" y="30" fill="#00f3ff99" font-size="6" font-family="monospace">London</text>
-        <text x="32"  y="44" fill="#00ff4199" font-size="6" font-family="monospace">Moscow</text>
-        <text x="162" y="38" fill="#ffe60099" font-size="6" font-family="monospace">Tokyo</text>
-      </svg>
-    </div>
-    <div class="hud-panel" id="hud-radar">
-      <div class="hud-title">&#9632; SIGNAL RADAR</div>
-      <canvas id="radar-canvas" width="140" height="140"></canvas>
-    </div>
-  </div>
-
-  <!-- ══════════════════ MAIN APP ══════════════════ -->
-  <div id="app">
-
-    <!-- HEADER -->
-    <header id="site-header">
-      <div class="header-label">&#9724; TRYHACKME OPERATOR PROFILE &#9724;</div>
-      <div class="level-badge" id="level-badge">&#9632;&nbsp;[0x6]&nbsp;VOYAGER&nbsp;&#9632;</div>
-      <div id="glitch-title" data-text="ALEXISLEROI // TRYHACKME">ALEXISLEROI // TRYHACKME</div>
-      <div class="header-sub">
-        Certified Pentester in training &bull; <span>[0x6] VOYAGER</span> &bull; &#127467;&#127479;
-      </div>
-      <div class="header-badge">&#9632; SESSION ACTIVE &#9632; TOP 20% GLOBAL &#9632; 3 ROOMS → NEXT BADGE &#9632;</div>
-      <div class="header-quote">&#9658;&nbsp;Hack the planet! &bull; One room at a time</div>
-    </header>
-
-    <div id="main-body">
-
-      <!-- ══════ SIDEBAR ══════ -->
-      <nav id="sidebar">
-        <div class="sidebar-section">
-          <div class="sidebar-title">&#9642; NAVIGATION</div>
-          <div class="nav-item active" onclick="setNav(this)">
-            <span class="icon">&#9635;</span> Dashboard
-          </div>
-          <div class="nav-item" onclick="setNav(this)">
-            <span class="icon">&#9881;</span> Machines
-          </div>
-          <div class="nav-item" onclick="setNav(this)">
-            <span class="icon">&#9878;</span> Modules
-          </div>
-          <div class="nav-item" onclick="setNav(this)">
-            <span class="icon">&#127942;</span> Certifications
-          </div>
-          <div class="nav-item" onclick="setNav(this)">
-            <span class="icon">&#127947;</span> Badges
-          </div>
-          <div class="nav-item" onclick="setNav(this)">
-            <span class="icon">&#9881;</span> Param&egrave;tres
-          </div>
-          <button class="btn-attack" onclick="startAttack()">
-            &#9658; START NEW ATTACK
-          </button>
-        </div>
-
-        <div class="sidebar-section">
-          <div class="sidebar-title">&#9642; LIVE STATS</div>
-          <div class="live-stat"><span>Active sessions</span><span class="val">3</span></div>
-          <div class="live-stat"><span>Root access</span><span class="val warn">2 / 5</span></div>
-          <div class="live-stat"><span>Exploits loaded</span><span class="val">12</span></div>
-          <div class="live-stat"><span>Network status</span><span class="val">ONLINE</span></div>
-          <div class="live-stat"><span>VPN</span><span class="val">&#9632; ACTIVE</span></div>
-        </div>
-
-        <div class="sidebar-section">
-          <div class="sidebar-title">&#9642; TERMINAL</div>
-          <div id="mini-terminal">
-            <div class="term-prompt">alexisleroi@thm:~#</div>
-            <div class="cmd-line" id="tc0">nmap -sV 10.10.45.89</div>
-            <div class="cmd-line" id="tc1">hydra -l admin -P rockyou.txt ssh</div>
-            <div class="cmd-line" id="tc2">gobuster dir -u http://target</div>
-            <div class="cmd-line"><span class="cursor-blink">_</span></div>
-          </div>
-        </div>
-      </nav>
-
-      <!-- ══════ CONTENT ══════ -->
-      <main id="content">
-
-        <!-- STAT CARDS -->
-        <div class="cards-row">
-          <div class="stat-card">
-            <div class="card-icon">&#9635;</div>
-            <div class="card-label">Rooms Completed</div>
-            <div class="card-value green" id="cnt-rooms">0</div>
-            <div class="card-sub">/ 150 total</div>
-            <div class="hash-val" id="hash-rooms">HASH: 0x...</div>
-            <div class="card-led"></div>
-          </div>
-          <div class="stat-card">
-            <div class="card-icon">&#128737;</div>
-            <div class="card-label">Badges Earned</div>
-            <div class="card-value" id="cnt-badges">0</div>
-            <div class="card-sub">achievements unlocked</div>
-            <div class="hash-val" id="hash-badges">HASH: 0x...</div>
-            <div class="card-led" style="animation-delay:.5s"></div>
-          </div>
-          <div class="stat-card">
-            <div class="card-icon">&#9733;</div>
-            <div class="card-label">Global Rank</div>
-            <div class="card-value yellow" id="cnt-rank">0</div>
-            <div class="card-sub">global percentile</div>
-            <div class="hash-val">HASH: 0xA3F2...</div>
-            <div class="card-led" style="background:#ffe600;box-shadow:0 0 8px #ffe600;animation-delay:1s"></div>
-          </div>
-          <div class="stat-card">
-            <div class="card-icon">&#128293;</div>
-            <div class="card-label">Current Streak</div>
-            <div class="card-value flame-val">
-              <span class="flame">&#128293;</span><span id="cnt-streak">0</span>
+        <div class="login-box hidden" id="login-box">
+            <div class="kali-logo-wrap">
+                <svg class="kali-neon-svg" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M16.85 8.081l-0.187-0.606c-1.436-0.223-3.092-0.35-4.778-0.35-0.879 0-1.75 0.035-2.611 0.103l0.114-0.007c-3.096 0.294-5.941 0.915-8.648 1.835l0.265-0.078c3.126-0.78 6.714-1.228 10.407-1.228 1.917 0 3.805 0.121 5.659 0.355l-0.221-0.023zM30.992 23.819s0.39-4.471-6.636-5.502c-0.944-0.144-2.037-0.228-3.148-0.234l-0.006-0c-5.631 0.075-5.836-6.494-1.593-6.826 2.193 0.12 4.213 0.758 5.973 1.793l-0.062-0.034c-0.006 0.040-0.009 0.085-0.009 0.132 0 0.209 0.067 0.403 0.181 0.561l-0.002-0.003c0.293 0.215 0.628 0.402 0.985 0.545l0.031 0.011c0.492 0.288 0.911 0.642 1.261 1.055l0.006 0.007c0.241-0.236 0.509-0.447 0.797-0.628l0.020-0.012c-0.214-0.019-0.411-0.072-0.593-0.153l0.012 0.005c-0.35-0.164-0.649-0.378-0.902-0.638l-0.001-0.001c-0.012-0.027-0.019-0.069 0.075-0.087 0.074-0.061-0.090-0.259-0.162-0.331s-0.556-0.895-0.567-0.912c-0.010-0.026-0.027-0.047-0.050-0.062l-0-0c-0.020-0.001-0.044-0.001-0.067-0.001-0.18 0-0.355 0.019-0.524 0.054l0.017-0.003c-0.446-0.244-0.786-0.632-0.962-1.102l-0.005-0.014c0.004 0.134-0.124 0.28 0 0.586-0.463-0.208-0.811-0.604-0.949-1.088l-0.003-0.012c-0.044 0.091-0.070 0.198-0.070 0.312s0.026 0.221 0.072 0.316l-0.002-0.004c-0.506-0.15-0.892-0.55-1.022-1.052l-0.002-0.010c-0.046 0.085-0.073 0.186-0.073 0.293s0.027 0.208 0.075 0.296l-0.002-0.003c-1.069-0.483-2.318-0.765-3.633-0.765-0.071 0-0.142 0.001-0.212 0.002l0.011-0c-1.603-0.147-1.937-2.967-1.787-3.441-2.007-0.913-4.336-1.539-6.784-1.751l-0.080-0.006c-1.356-0.169-2.926-0.265-4.518-0.265-1.326 0-2.636 0.067-3.928 0.197l0.163-0.013c0.395-0.014 0.859-0.022 1.325-0.022 4.728 0 9.263 0.824 13.469 2.337l-0.278-0.087c0.367 1.327 0.789 2.458 1.294 3.541l-0.058-0.138c-1.376 0.702-2.309 2.094-2.344 3.707l-0 0.005c-0.001 0.039-0.002 0.085-0.002 0.131 0 2.398 1.944 4.343 4.343 4.343 0 0 0 0 0 0h-0c0.162-0.007 0.352-0.011 0.543-0.011 1.981 0 3.859 0.438 5.544 1.222l-0.081-0.034c2.145 1.673 3.533 4.23 3.611 7.114l0 0.013c0.165-2.136-0.636-6.727-4.374-8.12 5.225 0.915 5.685 4.789 5.685 4.789zM26.683 13.223c0.049-0.085 0.207 0.271 0.329 0.421 0.005 0.030 0.012 0.049-0.056 0.034-0.002-0.015-0.007-0.029-0.016-0.040l0 0c-0.084-0.049-0.157-0.106-0.221-0.171l-0-0c-0.030-0.045-0.048-0.1-0.048-0.159 0-0.030 0.005-0.060 0.013-0.087l-0.001 0.002zM26.158 12.299l0.321-0.021c-1.421-1.523-3.226-2.67-5.262-3.287l-0.084-0.022c1.974 0.757 3.653 1.891 5.020 3.325l0.005 0.005zM16.972 8.431c-2.388 0.009-4.675 0.43-6.798 1.194l0.142-0.044c-2.553 0.762-4.779 1.865-6.768 3.28l0.070-0.047c3.932-2.105 8.557-3.461 13.469-3.755l0.092-0.004z">
+                    </path>
+                </svg>
             </div>
-            <div class="card-sub">days in a row 🔥</div>
-            <div class="hash-val">HASH: 0x1E5D...</div>
-            <div class="card-led" style="background:#ff6b35;box-shadow:0 0 8px #ff6b35;animation-delay:1.5s"></div>
-          </div>
-        </div>
-
-        <!-- SKILLS + CERTIFICATIONS -->
-        <div class="two-col">
-
-          <!-- SKILL MATRIX -->
-          <div class="panel">
-            <div class="panel-header">
-              <span class="panel-title panel-title-green">&#9635; SKILL MATRIX</span>
-              <div class="panel-dot"></div>
-            </div>
-            <div id="skills-chart-wrap">
-              <div class="skill-bar-row">
-                <div class="skill-name">&#9670; Web Exploitation</div>
-                <div class="skill-track"><div class="skill-fill blue"   id="sk-web"    style="width:0%"></div></div>
-                <div class="skill-pct">82%</div>
-              </div>
-              <div class="skill-bar-row">
-                <div class="skill-name">&#9670; Network Hacking</div>
-                <div class="skill-track"><div class="skill-fill green"  id="sk-net"    style="width:0%"></div></div>
-                <div class="skill-pct">75%</div>
-              </div>
-              <div class="skill-bar-row">
-                <div class="skill-name">&#9670; Cryptography</div>
-                <div class="skill-track"><div class="skill-fill pink"   id="sk-crypto" style="width:0%"></div></div>
-                <div class="skill-pct">60%</div>
-              </div>
-              <div class="skill-bar-row">
-                <div class="skill-name">&#9670; Forensics</div>
-                <div class="skill-track"><div class="skill-fill yellow" id="sk-for"    style="width:0%"></div></div>
-                <div class="skill-pct">53%</div>
-              </div>
-              <div class="skill-bar-row">
-                <div class="skill-name">&#9670; Reverse Engineering</div>
-                <div class="skill-track"><div class="skill-fill red"    id="sk-rev"    style="width:0%"></div></div>
-                <div class="skill-pct">41%</div>
-              </div>
-              <div class="level-gauge-wrap">
-                <div class="level-label">
-                <span><strong>37 / 100</strong> rooms completed</span>
-                <span>37% to Next Level</span>
-              </div>
-              <div class="level-track"><div class="level-fill" style="width:37%"></div></div>
-              </div>
-            </div>
-            <div class="chart-container">
-              <canvas id="radarChart"></canvas>
-            </div>
-          </div>
-
-          <!-- CERTIFICATIONS -->
-          <div class="panel">
-            <div class="panel-header">
-              <span class="panel-title">&#127942; CERTIFICATIONS &amp; BADGES</span>
-              <div class="panel-dot"></div>
-            </div>
-
-            <!-- OFFICIAL THM BADGE IFRAME -->
-            <div class="thm-iframe-wrap">
-              <div class="thm-iframe-label">&#9642; LIVE THM PROFILE — AlexisLeroi</div>
-              <iframe
-                src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=7087670"
-                style="border:none; width:100%; height:200px;"
-                title="TryHackMe Badges - AlexisLeroi"
-                loading="lazy">
-              </iframe>
-              <div class="milestone-bar">
-                <span class="mile-icon">&#9658;</span>
-                <span class="mile-text">Next milestone: <strong>50 rooms</strong> &bull; 13 more to go!</span>
-                <span class="mile-badge">3 rooms → next badge</span>
-              </div>
-            </div>
-
-            <!-- CUSTOM CERT CARDS -->
-            <div class="cert-grid">
-              <div class="cert-card" onclick="showCert('Jr. Penetration Tester','IN PROGRESS','20%','—','~6 weeks left','THM-JRPT-PENDING')">
-                <div class="cert-badge-icon">&#127942;</div>
-                <div class="cert-name">Jr. Penetration Tester</div>
-                <span class="cert-status wip">&#9632; IN PROGRESS</span>
-                <div class="cert-progress-track"><div class="cert-progress-fill blue" id="cp-jrpt" style="width:0%"></div></div>
-                <div class="cert-pct">20% complete</div>
-                <div class="cert-hash">Block: PENDING...</div>
-              </div>
-              <div class="cert-card earned" onclick="showCert('Pre-Security','EARNED','100%','2026-03-14','2 weeks','THM-PRESEC-A3B0')">
-                <div class="cert-badge-icon">&#128737;</div>
-                <div class="cert-name">Pre-Security</div>
-                <span class="cert-status done">&#9632; EARNED</span>
-                <div class="cert-progress-track"><div class="cert-progress-fill" style="width:100%"></div></div>
-                <div class="cert-pct">100% &mdash; Completed</div>
-                <div class="cert-hash">Block: 0xA3B0...9C44</div>
-              </div>
-              <div class="cert-card" onclick="showCert('SOC Level 1','IN PROGRESS','65%','—','~3 weeks left','THM-SOC1-PENDING')">
-                <div class="cert-badge-icon">&#128270;</div>
-                <div class="cert-name">SOC Level 1</div>
-                <span class="cert-status wip">&#9632; IN PROGRESS</span>
-                <div class="cert-progress-track"><div class="cert-progress-fill blue" id="cp-soc" style="width:0%"></div></div>
-                <div class="cert-pct">65% complete</div>
-                <div class="cert-hash">Block: PENDING...</div>
-              </div>
-              <div class="cert-card" onclick="showCert('Web Fundamentals','IN PROGRESS','45%','—','~3 weeks left','THM-WEBFUND-PENDING')">
-                <div class="cert-badge-icon">&#127760;</div>
-                <div class="cert-name">Web Fundamentals</div>
-                <span class="cert-status wip">&#9632; IN PROGRESS</span>
-                <div class="cert-progress-track"><div class="cert-progress-fill blue" id="cp-web" style="width:0%"></div></div>
-                <div class="cert-pct">45% complete</div>
-                <div class="cert-hash">Block: PENDING...</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- MACHINES + ACTIVITY -->
-        <div class="three-col">
-
-          <!-- MACHINES TABLE -->
-          <div class="panel">
-            <div class="panel-header">
-              <span class="panel-title">&#9881; RECENT MACHINES</span>
-              <div class="panel-dot"></div>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr><th>Machine</th><th>Difficulty</th><th>Status</th><th>Date</th><th>TTR</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>MrRobot</td>    <td><span class="diff-badge diff-medium">MEDIUM</span></td><td><span class="status-root">&#9632; ROOT</span></td>  <td>2026-03-13</td><td>45 min</td></tr>
-                  <tr><td>Blue</td>        <td><span class="diff-badge diff-easy">EASY</span></td>    <td><span class="status-root">&#9632; ROOT</span></td>  <td>2026-03-12</td><td>22 min</td></tr>
-                  <tr><td>Relevant</td>    <td><span class="diff-badge diff-medium">MEDIUM</span></td><td><span class="status-user">&#9632; USER</span></td>  <td>2026-03-11</td><td>1h 10m</td></tr>
-                  <tr><td>Brainpan</td>    <td><span class="diff-badge diff-hard">HARD</span></td>    <td><span class="status-root">&#9632; ROOT</span></td>  <td>2026-03-10</td><td>2h 05m</td></tr>
-                  <tr><td>Anthem</td>      <td><span class="diff-badge diff-easy">EASY</span></td>    <td><span class="status-root">&#9632; ROOT</span></td>  <td>2026-03-09</td><td>35 min</td></tr>
-                  <tr><td>Skynet</td>      <td><span class="diff-badge diff-medium">MEDIUM</span></td><td><span class="status-user">&#9632; USER</span></td>  <td>2026-03-08</td><td>55 min</td></tr>
-                  <tr><td>Overpass</td>    <td><span class="diff-badge diff-medium">MEDIUM</span></td><td><span class="status-none">&#9632; PENDING</span></td><td>—</td>         <td>—</td></tr>
-                  <tr><td>Pickle Rick</td> <td><span class="diff-badge diff-easy">EASY</span></td>    <td><span class="status-root">&#9632; ROOT</span></td>  <td>2026-03-07</td><td>18 min</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- ACTIVITY + DEBUG -->
-          <div class="panel">
-            <div class="panel-header">
-              <span class="panel-title panel-title-green">&#9642; LIVE ACTIVITY</span>
-              <div class="panel-dot"></div>
-            </div>
-            <div id="activity-feed">
-              <div class="activity-item act-new">
-                <span class="act-time">[21:37:42]</span>
-                <span class="act-icon">&#9876;</span>
-                <span class="act-text">Rooted <strong>MrRobot</strong> in 45min</span>
-              </div>
-              <div class="activity-item">
-                <span class="act-time">[20:15:11]</span>
-                <span class="act-icon">&#9989;</span>
-                <span class="act-text">Completed <strong>OWASP Top 10</strong> module</span>
-              </div>
-              <div class="activity-item">
-                <span class="act-time">[18:44:03]</span>
-                <span class="act-icon">&#127942;</span>
-                <span class="act-text">Earned badge <strong>Buffer Overflow King</strong></span>
-              </div>
-              <div class="activity-item">
-                <span class="act-time">[16:30:59]</span>
-                <span class="act-icon">&#9650;</span>
-                <span class="act-text">Ranked up to <strong>Level 7</strong></span>
-              </div>
-              <div class="activity-item">
-                <span class="act-time">[14:22:37]</span>
-                <span class="act-icon">&#9876;</span>
-                <span class="act-text">Rooted <strong>Blue</strong> (EternalBlue) 22min</span>
-              </div>
-              <div class="activity-item">
-                <span class="act-time">[12:05:18]</span>
-                <span class="act-icon">&#128272;</span>
-                <span class="act-text">Cracked <strong>MD5 hash</strong> via hashcat</span>
-              </div>
-            </div>
-            <!-- DEBUG CONSOLE -->
-            <div class="debug-section">
-              <div class="debug-label">&#9642; DEBUG CONSOLE</div>
-              <div id="debug-console">
-                <div class="debug-line">
-                  <span class="ts">[00:00:00]</span>
-                  <span class="mod">[INIT]</span>
-                  <span class="msg">Dashboard loaded successfully</span>
+            <h2 class="login-title">Kali Linux</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="field-user" value="root" autocomplete="off" readonly required>
                 </div>
-              </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="field-pass" placeholder="Password" autocomplete="off" required>
+                </div>
+                <button type="submit" class="login-btn" id="login-btn">Log In</button>
+            </form>
+            <div id="login-success" class="login-success hidden">
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill"></div>
+                </div>
+                <p class="login-status-text">Loading KDE Plasma environment...</p>
             </div>
-          </div>
-
-        </div><!-- /three-col -->
-
-      </main>
-    </div><!-- /main-body -->
-
-    <!-- ══════════════════ FOOTER ══════════════════ -->
-    <footer id="site-footer">
-      <div class="footer-stats">
-        <div class="footer-stat">
-          <span class="fv">37</span>
-          <span class="fl">Rooms completed</span>
         </div>
-        <div class="footer-stat">
-          <span class="fv">6</span>
-          <span class="fl">Badges earned</span>
-        </div>
-        <div class="footer-stat">
-          <span class="fv" style="color:var(--neon-green)">0x25</span>
-          <span class="fl">Rooms (hex)</span>
-        </div>
-      </div>
-      <div class="footer-mid">
-        <a href="https://tryhackme.com/p/AlexisLeroi" target="_blank" rel="noopener">&#9654; View THM Profile — AlexisLeroi &#127467;&#127479;</a>
-        <div class="footer-msg">&#9632; Stay anonymous &bull; Keep hacking &bull; [0x6] VOYAGER &#9632;</div>
-        <div class="footer-ver">v2.0.1 &mdash; Kali Rolling &nbsp;|&nbsp; <span id="footer-date">2026-03-14</span></div>
-      </div>
-      <div class="footer-stats">
-        <div class="footer-stat">
-          <span class="fv" style="color:var(--neon-green)">6</span>
-          <span class="fl">Day streak 🔥</span>
-        </div>
-        <div class="footer-stat">
-          <span class="fv" style="color:var(--neon-yellow)">Top 20%</span>
-          <span class="fl">Global rank</span>
-        </div>
-        <div class="footer-stat">
-          <span class="fv" style="color:var(--neon-pink)">[0x6]</span>
-          <span class="fl">Voyager level</span>
-        </div>
-      </div>
-    </footer>
-
-  </div><!-- /app -->
-
-  <!-- ══════════════════ CERT MODAL ══════════════════ -->
-  <div class="cert-detail-overlay" id="cert-overlay">
-    <div class="cert-detail-box">
-      <div class="cert-detail-close" onclick="hideCert()">&#10005;</div>
-      <div class="cert-detail-title" id="cd-title">—</div>
-      <div class="cert-detail-row"><span class="key">Status</span>       <span class="val" id="cd-status">—</span></div>
-      <div class="cert-detail-row"><span class="key">Progress</span>      <span class="val" id="cd-progress">—</span></div>
-      <div class="cert-detail-row"><span class="key">Completed</span>     <span class="val" id="cd-date">—</span></div>
-      <div class="cert-detail-row"><span class="key">Time invested</span> <span class="val" id="cd-time">—</span></div>
-      <div class="cert-detail-row"><span class="key">Credential ID</span><span class="val small" id="cd-id">—</span></div>
-      <div class="cert-blockchain" id="cd-block">BLOCKCHAIN: 0x0000...0000</div>
-      <div class="cert-qr-wrap">
-        <canvas id="qr-canvas" width="60" height="60"></canvas>
-        <div class="cert-qr-label">Scan QR to verify<br>credential authenticity</div>
-      </div>
     </div>
-  </div>
 
-  <!-- MOBILE SIDEBAR TOGGLE -->
-  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <button id="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+    <!-- ============================================================
+     MAIN APPLICATION
+     ============================================================ -->
+    <div id="app-container" class="hidden">
 
-  <script src="js/main.js"></script>
+        <div id="nav-overlay" class="sidebar-overlay"></div>
+
+        <!-- ===================== SIDEBAR ===================== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand" style="justify-content:space-between">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="brand-name glitch-crypto" data-text="AlexisLeroi//THM">AlexisLeroi//THM</span>
+                    </div>
+                    <button class="sidebar-close-btn" id="sidebar-close" aria-label="Close menu">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="user-card">
+                    <img class="user-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=root" alt="User avatar">
+                    <div class="user-meta">
+                        <span class="user-name">root</span>
+                        <span class="user-role">System Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="main-nav" aria-label="Dashboard navigation">
+                <ul>
+                    <li class="nav-item active" data-page="overview">
+                        <a href="#overview"><i class="fa-solid fa-chart-line"></i> Overview</a>
+                    </li>
+                    <li class="nav-item" data-page="training">
+                        <a href="#training"><i class="fa-solid fa-graduation-cap"></i> Training</a>
+                    </li>
+                    <li class="nav-item" data-page="targets">
+                        <a href="#targets"><i class="fa-solid fa-crosshairs"></i> Targets</a>
+                    </li>
+                    <li class="nav-item" data-page="certifications">
+                        <a href="#certifications"><i class="fa-solid fa-certificate"></i> Certifications</a>
+                    </li>
+                    <li class="nav-item" data-page="contact">
+                        <a href="#contact"><i class="fa-solid fa-address-card"></i> Contact</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-dot"></div>
+                <span>Secured Connection</span>
+            </div>
+        </aside>
+
+        <!-- ===================== MAIN CONTENT ===================== -->
+        <main class="main-content">
+            <header class="topbar">
+                <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="search-bar">
+                    <i class="fa-solid fa-terminal"></i>
+                    <input type="text" placeholder="execute command...">
+                </div>
+                <div class="topbar-right">
+                    <button class="icon-btn" aria-label="Notifications">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notif-dot"></span>
+                    </button>
+                    <button class="icon-btn" id="theme-btn" aria-label="Toggle theme">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="scrollable-content">
+
+                <!-- ==================== OVERVIEW ==================== -->
+                <section id="overview" class="page active">
+                    <div class="page-header">
+                        <h1>Terminal <span>// EthHacking_Progress</span></h1>
+                        <p class="page-subtitle">Welcome to the central intelligence dashboard.</p>
+                    </div>
+
+                    <div class="glass welcome-card animate-on-scroll reveal-up">
+                        <div>
+                            <h2 class="welcome-title">Passionné de cybersécurité, je consolide mes compétences sur
+                                TryHackMe</h2>
+                            <div class="welcome-desc">
+                                <p class="desc-intro">> Passionné par les défis techniques et la protection du numérique, j'ai choisi d'approfondir mes compétences en cybersécurité de manière concrète et pratique. Je consacre une grande partie de mon temps à la plateforme <span class="hl-cyan">TryHackMe</span>.</p>
+
+                                <p class="desc-core">Pour moi, TryHackMe est bien plus qu'un simple site d'entraînement. C'est un véritable terrain de jeu qui me permet d'acquérir des compétences solides et opérationnelles en :</p>
+
+                                <ul class="cyber-list">
+                                    <li><i class="fa-solid fa-satellite-dish"></i> Reconnaissance et collecte d'informations.</li>
+                                    <li><i class="fa-solid fa-bug"></i> Exploitation de vulnérabilités (Web, système, réseau).</li>
+                                    <li><i class="fa-solid fa-microscope"></i> Analyse de logs et réponse à incident.</li>
+                                    <li><i class="fa-solid fa-shield-virus"></i> Compréhension des mécanismes de défense.</li>
+                                </ul>
+
+                                <p class="desc-outro">Grâce à ses parcours guidés ('Paths') et ses 'Rooms' challenges, je développe une méthodologie rigoureuse et une culture technique essentielle pour évoluer dans le monde de la cybersécurité. 
+                                <br><br><span class="hl-green">></span> Je suis désormais prêt à mettre ces compétences en pratique et à continuer d'apprendre au sein d'une équipe dynamique.</p>
+                            </div>
+                            <div class="stats-row">
+                                <div class="stat-pill">
+                                    <span class="label">Overall Progress</span>
+                                    <div class="prog-bar">
+                                        <div class="prog-fill" style="width:45%"></div>
+                                    </div>
+                                    <span class="val">45%</span>
+                                </div>
+                                <div class="stat-pill">
+                                    <span class="label">Current Rank</span>
+                                    <span class="val green">Script Kiddie++</span>
+                                </div>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-network-wired welcome-icon"></i>
+                    </div>
+
+                    <div class="grid grid-2">
+
+                        <!-- Nmap Scan Terminal -->
+                        <div class="glass widget nmap-widget animate-on-scroll reveal-left">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-satellite-dish"></i> Nmap Recon</h3>
+                                <div class="live-badge">
+                                    <div class="live-dot"></div> ACTIVE
+                                </div>
+                            </div>
+                            <div class="nmap-terminal" id="nmap-terminal">
+                                <!-- JS will inject nmap lines here -->
+                            </div>
+                        </div>
+
+                        <!-- Badges -->
+                        <div class="glass widget animate-on-scroll reveal-zoom">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-shield-halved"></i> Recent Badges</h3>
+                                <a href="#" class="view-all-link">View All</a>
+                            </div>
+                            <div class="badges-grid">
+                                <div class="badge-item cyan">
+                                    <div class="badge-icon"><i class="fa-brands fa-linux"></i></div>
+                                    <span>Linux Basics</span>
+                                </div>
+                                <div class="badge-item purple">
+                                    <div class="badge-icon"><i class="fa-solid fa-hammer"></i></div>
+                                    <span>Brute Force</span>
+                                </div>
+                                <div class="badge-item grey">
+                                    <div class="badge-icon"><i class="fa-solid fa-globe"></i></div>
+                                    <span>Web Enum</span>
+                                </div>
+                                <div class="badge-item locked">
+                                    <div class="badge-icon"><i class="fa-solid fa-lock"></i></div>
+                                    <span>PrivEsc</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TryHackMe Badge -->
+                        <div class="glass widget thm-widget animate-on-scroll reveal-zoom">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-chart-bar"></i> TryHackMe Profile</h3>
+                            </div>
+                            <iframe src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=7087670"
+                                title="TryHackMe public profile badge" loading="lazy" style="border:none;">
+                            </iframe>
+                        </div>
+
+                        <!-- Brute Force Terminal -->
+                        <div class="glass widget bf-widget animate-on-scroll reveal-right">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-terminal"></i> Hydra Brute Force</h3>
+                                <div class="live-badge">
+                                    <div class="live-dot"></div> ACTIVE
+                                </div>
+                            </div>
+                            <div class="bf-terminal" id="bf-terminal">
+                                <!-- JS will inject lines here -->
+                            </div>
+                        </div>
+
+                        <!-- Career Roadmap -->
+                        <div class="glass widget roadmap-widget col-full animate-on-scroll reveal-blur">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-route"></i> Career Cyber Roadmap</h3>
+                                <div class="live-badge">
+                                    <div class="live-dot"></div> IN PROGRESS
+                                </div>
+                            </div>
+
+                            <div class="roadmap-container">
+                                <div class="roadmap-line">
+                                    <div class="roadmap-progress"></div>
+                                </div>
+
+                                <div class="roadmap-step completed">
+                                    <div class="step-icon">
+                                        <i class="fa-solid fa-code"></i>
+                                    </div>
+                                    <div class="step-info">
+                                        <h4>D&eacute;veloppeur</h4>
+                                        <span>Fondations</span>
+                                    </div>
+                                </div>
+
+                                <div class="roadmap-step active">
+                                    <div class="step-icon">
+                                        <i class="fa-solid fa-shield-halved"></i>
+                                    </div>
+                                    <div class="step-info">
+                                        <h4>Cybersecurity 101</h4>
+                                        <span>En cours</span>
+                                    </div>
+                                </div>
+
+                                <div class="roadmap-step pending">
+                                    <div class="step-icon">
+                                        <i class="fa-solid fa-user-secret"></i>
+                                    </div>
+                                    <div class="step-info">
+                                        <h4>Pentester</h4>
+                                        <span>Objectif</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Attack Map -->
+                        <div class="glass map-widget col-full animate-on-scroll reveal-up">
+                            <div class="map-header">
+                                <h3><i class="fa-solid fa-globe"></i> Live Threat Intelligence Map</h3>
+                                <div class="live-badge">
+                                    <div class="live-dot"></div> LIVE
+                                </div>
+                            </div>
+                            <div class="map-body">
+                                <div id="cyber-map"></div>
+                                <canvas id="map-canvas"></canvas>
+
+                                <div class="map-overlay map-stats-top">
+                                    <div class="stat-box">
+                                        <span class="stat-label">Attacks Today</span>
+                                        <span class="stat-value c" id="total-attacks">14,245,601</span>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="stat-label">Attacks / Sec</span>
+                                        <span class="stat-value r" id="attacks-per-sec">2,140</span>
+                                    </div>
+                                </div>
+
+                                <div class="map-overlay map-country-list left">
+                                    <h4><i class="fa-solid fa-crosshairs"></i> Top Attackers</h4>
+                                    <ul>
+                                        <li>🇺🇸 United States <span class="bar-mini"><span class="bar-mini-fill"
+                                                    style="width:80%"></span></span></li>
+                                        <li>🇨🇳 China <span class="bar-mini"><span class="bar-mini-fill"
+                                                    style="width:65%"></span></span></li>
+                                        <li>🇷🇺 Russia <span class="bar-mini"><span class="bar-mini-fill"
+                                                    style="width:50%"></span></span></li>
+                                        <li>🇧🇷 Brazil <span class="bar-mini"><span class="bar-mini-fill"
+                                                    style="width:35%"></span></span></li>
+                                        <li>🇮🇳 India <span class="bar-mini"><span class="bar-mini-fill"
+                                                    style="width:20%"></span></span></li>
+                                    </ul>
+                                </div>
+
+                                <div class="map-overlay map-country-list right">
+                                    <h4><i class="fa-solid fa-shield-virus"></i> Top Targets</h4>
+                                    <ul>
+                                        <li>🇺🇸 United States <span class="bar-mini"><span class="bar-mini-fill"
+                                                    style="width:90%"></span></span></li>
+                                        <li>🇩🇪 Germany <span class="bar-mini"><span class="bar-mini-fill"
+                                                    style="width:55%"></span></span></li>
+                                        <li>🇬🇧 UK <span class="bar-mini"><span class="bar-mini-fill"
+                                                    style="width:40%"></span></span></li>
+                                        <li>🇫🇷 France <span class="bar-mini"><span class="bar-mini-fill"
+                                                    style="width:30%"></span></span></li>
+                                        <li>🇯🇵 Japan <span class="bar-mini"><span class="bar-mini-fill"
+                                                    style="width:25%"></span></span></li>
+                                    </ul>
+                                </div>
+
+                                <div class="map-overlay map-legend">
+                                    <span><span class="legend-dot" style="background:#00e5ff"></span>SCAN</span>
+                                    <span><span class="legend-dot" style="background:#ff2a2a"></span>DDOS</span>
+                                    <span><span class="legend-dot" style="background:#a855f7"></span>WEB APP</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- ==================== TRAINING ==================== -->
+                <section id="training" class="page">
+                    <div class="page-header">
+                        <h1>Terminal <span>// Training_Modules</span></h1>
+                        <p class="page-subtitle">TryHackMe badges earned — AlexisLeroi</p>
+                    </div>
+
+                    <div class="glass widget">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-trophy"></i> Badges Obtenus</h3>
+                            <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text3)">7 / 7</span>
+                        </div>
+                        <div class="thm-badges-grid">
+
+                            <a class="thm-badge-card"
+                                href="https://tryhackme.com/AlexisLeroi/badges/first-4-rooms?utm_campaign=social_share&utm_medium=social&utm_content=badge&utm_source=copy&sharerId=69a88325b5b33e75809f2d3f"
+                                target="_blank" rel="noopener">
+                                <img src="https://tryhackme.com/img/badges/first-4-rooms.svg" alt="First 4 Rooms"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <div class="thm-badge-fallback"><i class="fa-solid fa-door-open"></i></div>
+                                <span class="thm-badge-name">First 4 Rooms</span>
+                                <span class="thm-badge-link"><i
+                                        class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                            </a>
+
+                            <a class="thm-badge-card"
+                                href="https://tryhackme.com/AlexisLeroi/badges/network-fundamentals?utm_campaign=social_share&utm_medium=social&utm_content=badge&utm_source=copy&sharerId=69a88325b5b33e75809f2d3f"
+                                target="_blank" rel="noopener">
+                                <img src="https://tryhackme.com/img/badges/network-fundamentals.svg"
+                                    alt="Network Fundamentals"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <div class="thm-badge-fallback"><i class="fa-solid fa-network-wired"></i></div>
+                                <span class="thm-badge-name">Network Fundamentals</span>
+                                <span class="thm-badge-link"><i
+                                        class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                            </a>
+
+                            <a class="thm-badge-card"
+                                href="https://tryhackme.com/AlexisLeroi/badges/web-fund?utm_campaign=social_share&utm_medium=social&utm_content=badge&utm_source=copy&sharerId=69a88325b5b33e75809f2d3f"
+                                target="_blank" rel="noopener">
+                                <img src="https://tryhackme.com/img/badges/web-fund.svg" alt="Web Fundamentals"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <div class="thm-badge-fallback"><i class="fa-solid fa-globe"></i></div>
+                                <span class="thm-badge-name">Web Fundamentals</span>
+                                <span class="thm-badge-link"><i
+                                        class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                            </a>
+
+                            <a class="thm-badge-card"
+                                href="https://tryhackme.com/AlexisLeroi/badges/3-day-streak?utm_campaign=social_share&utm_medium=social&utm_content=badge&utm_source=copy&sharerId=69a88325b5b33e75809f2d3f"
+                                target="_blank" rel="noopener">
+                                <img src="https://tryhackme.com/img/badges/streak3.svg" alt="3 Day Streak"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <div class="thm-badge-fallback"><i class="fa-solid fa-fire"></i></div>
+                                <span class="thm-badge-name">3 Day Streak</span>
+                                <span class="thm-badge-link"><i
+                                        class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                            </a>
+
+                            <a class="thm-badge-card"
+                                href="https://tryhackme.com/AlexisLeroi/badges/world-wide-web?utm_campaign=social_share&utm_medium=social&utm_content=badge&utm_source=copy&sharerId=69a88325b5b33e75809f2d3f"
+                                target="_blank" rel="noopener">
+                                <img src="https://tryhackme.com/img/badges/world-wide-web.svg" alt="World Wide Web"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <div class="thm-badge-fallback"><i class="fa-solid fa-earth-europe"></i></div>
+                                <span class="thm-badge-name">World Wide Web</span>
+                                <span class="thm-badge-link"><i
+                                        class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                            </a>
+
+                            <a class="thm-badge-card"
+                                href="https://tryhackme.com/AlexisLeroi/badges/terminaled?utm_campaign=social_share&utm_medium=social&utm_content=badge&utm_source=copy&sharerId=69a88325b5b33e75809f2d3f"
+                                target="_blank" rel="noopener">
+                                <img src="https://tryhackme.com/img/badges/terminaled.svg" alt="Terminaled"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <div class="thm-badge-fallback"><i class="fa-solid fa-terminal"></i></div>
+                                <span class="thm-badge-name">Terminaled</span>
+                                <span class="thm-badge-link"><i
+                                        class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                            </a>
+
+                            <a class="thm-badge-card"
+                                href="https://tryhackme.com/AlexisLeroi/badges/7-day-streak?utm_campaign=social_share&utm_medium=social&utm_content=badge&utm_source=copy&sharerId=69a88325b5b33e75809f2d3f"
+                                target="_blank" rel="noopener">
+                                <img src="https://tryhackme.com/img/badges/streak7.svg" alt="7 Day Streak"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <div class="thm-badge-fallback"><i class="fa-solid fa-fire-flame-curved"></i></div>
+                                <span class="thm-badge-name">7 Day Streak</span>
+                                <span class="thm-badge-link"><i
+                                        class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                            </a>
+
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ==================== TARGETS ==================== -->
+                <section id="targets" class="page">
+                    <div class="page-header">
+                        <h1>Terminal <span>// Targets_Rooms</span></h1>
+                        <p class="page-subtitle">26 rooms completed &mdash; TryHackMe &middot; AlexisLeroi</p>
+                    </div>
+
+                    <!-- Terminal Notes -->
+                    <div class="glass widget term-block animate-on-scroll">
+                        <div class="term-bar">
+                            <span class="term-dot" style="background:#ff5f56"></span>
+                            <span class="term-dot" style="background:#ffbd2e"></span>
+                            <span class="term-dot" style="background:#27c93f"></span>
+                            <span class="term-title">root@kali:~$ cat mission_report.txt</span>
+                        </div>
+                        <div class="term-body">
+                            <p><span class="term-prompt">root@kali:~$</span> <span class="term-cmd">cat
+                                    mission_report.txt</span></p>
+                            <br>
+                            <p><span class="term-comment"># RAPPORT D'ENTRA&Icirc;NEMENT &mdash; TRYHACKME ROOMS</span>
+                            </p>
+                            <br>
+                            <p>Les rooms ci-dessous m'ont permis de <span class="term-hl">mettre en pratique</span> les
+                                cours th&eacute;oriques</p>
+                            <p>et d'acqu&eacute;rir une exp&eacute;rience concr&egrave;te sur les outils et techniques
+                                suivants :</p>
+                            <br>
+                            <p><span class="term-comment"># RECONNAISSANCE &amp; OSINT</span></p>
+                            <p>&nbsp;&nbsp;&rarr; <span
+                                    class="term-tool">nmap</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&mdash;
+                                scan de ports et d&eacute;tection de services</p>
+                            <p>&nbsp;&nbsp;&rarr; <span
+                                    class="term-tool">whois</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&mdash;
+                                informations sur les domaines</p>
+                            <p>&nbsp;&nbsp;&rarr; <span class="term-tool">dig / nslookup</span>&nbsp;&mdash;
+                                r&eacute;solution DNS, zones de transfert</p>
+                            <br>
+                            <p><span class="term-comment"># WEB HACKING</span></p>
+                            <p>&nbsp;&nbsp;&rarr; <span class="term-tool">Burp
+                                    Suite</span>&nbsp;&nbsp;&nbsp;&nbsp;&mdash; interception HTTP, manipulation de
+                                requ&ecirc;tes</p>
+                            <p>&nbsp;&nbsp;&rarr; <span
+                                    class="term-tool">gobuster</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&mdash;
+                                directory busting, fuzzing d'endpoints</p>
+                            <p>&nbsp;&nbsp;&rarr; <span class="term-tool">curl / wget</span>&nbsp;&nbsp;&nbsp;&mdash;
+                                requ&ecirc;tes HTTP en ligne de commande</p>
+                            <br>
+                            <p><span class="term-comment"># SYST&Egrave;ME &amp; R&Eacute;SEAU</span></p>
+                            <p>&nbsp;&nbsp;&rarr; <span class="term-tool">Bash / PowerShell</span> &mdash;
+                                automatisation, scripting syst&egrave;me</p>
+                            <p>&nbsp;&nbsp;&rarr; <span
+                                    class="term-tool">Wireshark</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&mdash; analyse de
+                                trames r&eacute;seau</p>
+                            <p>&nbsp;&nbsp;&rarr; <span class="term-tool">netcat (nc)</span>&nbsp;&nbsp;&nbsp;&mdash;
+                                connexions TCP/UDP, reverse shells</p>
+                            <br>
+                            <p><span class="term-comment"># CRYPTOGRAPHIE &amp; BASES DE DONN&Eacute;ES</span></p>
+                            <p>&nbsp;&nbsp;&rarr; <span class="term-tool">hashcat / john</span>&nbsp;&mdash; cracking de
+                                mots de passe</p>
+                            <p>&nbsp;&nbsp;&rarr; <span
+                                    class="term-tool">SQLMap</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&mdash;
+                                injection SQL automatis&eacute;e</p>
+                            <p>&nbsp;&nbsp;&rarr; <span
+                                    class="term-tool">CyberChef</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&mdash; encodage,
+                                d&eacute;codage, analyse de donn&eacute;es</p>
+                            <br>
+                            <p><span class="term-comment"># CONCLUSION</span></p>
+                            <p>&nbsp;&nbsp;Chaque room termin&eacute;e = un vecteur d'attaque mieux compris,</p>
+                            <p>&nbsp;&nbsp;un outil ma&icirc;tris&eacute;, un r&eacute;flexe de d&eacute;fense acquis.
+                            </p>
+                            <br>
+                            <p><span class="term-prompt">root@kali:~$</span> <span class="term-blink">&block;</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Room Cards -->
+                    <div class="glass widget animate-on-scroll" style="margin-top:1.5rem">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-crosshairs"></i> Rooms Compl&eacute;t&eacute;es</h3>
+                            <span style="font-family:var(--mono);font-size:0.75rem;color:var(--green)"><i
+                                    class="fa-solid fa-check"></i> 26 / 26</span>
+                        </div>
+                        <div class="room-grid">
+
+                            <a class="room-card" href="https://tryhackme.com/room/howwebsiteswork" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon web"><i class="fa-solid fa-globe"></i></div>
+                                <div class="room-info"><span class="room-name">How Websites Work</span><span
+                                        class="room-cat web">Web</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/puttingitalltogether" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon web"><i class="fa-solid fa-puzzle-piece"></i></div>
+                                <div class="room-info"><span class="room-name">Putting It All Together</span><span
+                                        class="room-cat web">Web</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/dnsindetail" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon net"><i class="fa-solid fa-at"></i></div>
+                                <div class="room-info"><span class="room-name">DNS in Detail</span><span
+                                        class="room-cat net">R&eacute;seau</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/httpindetail" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon web"><i class="fa-solid fa-code"></i></div>
+                                <div class="room-info"><span class="room-name">HTTP in Detail</span><span
+                                        class="room-cat web">Web</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/whatisnetworking" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon net"><i class="fa-solid fa-network-wired"></i></div>
+                                <div class="room-info"><span class="room-name">What is Networking?</span><span
+                                        class="room-cat net">R&eacute;seau</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/introtolan" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon net"><i class="fa-solid fa-server"></i></div>
+                                <div class="room-info"><span class="room-name">Intro to LAN</span><span
+                                        class="room-cat net">R&eacute;seau</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/osimodelzi" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon net"><i class="fa-solid fa-layer-group"></i></div>
+                                <div class="room-info"><span class="room-name">OSI Model</span><span
+                                        class="room-cat net">R&eacute;seau</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/packetsframes" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon net"><i class="fa-solid fa-wave-square"></i></div>
+                                <div class="room-info"><span class="room-name">Packets &amp; Frames</span><span
+                                        class="room-cat net">R&eacute;seau</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/extendingyournetwork" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon net"><i class="fa-solid fa-diagram-project"></i></div>
+                                <div class="room-info"><span class="room-name">Extending Your Network</span><span
+                                        class="room-cat net">R&eacute;seau</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/careersincyber5zy1sk0al"
+                                target="_blank" rel="noopener">
+                                <div class="room-icon intro"><i class="fa-solid fa-briefcase"></i></div>
+                                <div class="room-info"><span class="room-name">Careers in Cyber</span><span
+                                        class="room-cat intro">Intro</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/virtualisationbasics" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon sys"><i class="fa-solid fa-cubes"></i></div>
+                                <div class="room-info"><span class="room-name">Virtualisation Basics</span><span
+                                        class="room-cat sys">Syst&egrave;me</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/clientserverbasics" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon net"><i class="fa-solid fa-arrows-left-right"></i></div>
+                                <div class="room-info"><span class="room-name">Client-Server Basics</span><span
+                                        class="room-cat net">R&eacute;seau</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/insideacomputer" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon sys"><i class="fa-solid fa-microchip"></i></div>
+                                <div class="room-info"><span class="room-name">Inside a Computer</span><span
+                                        class="room-cat sys">Syst&egrave;me</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/offensivesecurityintrokKx12l39"
+                                target="_blank" rel="noopener">
+                                <div class="room-icon off"><i class="fa-solid fa-skull-crossbones"></i></div>
+                                <div class="room-info"><span class="room-name">Offensive Security Intro</span><span
+                                        class="room-cat off">Offensif</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/defensivesecurityintroez"
+                                target="_blank" rel="noopener">
+                                <div class="room-icon def"><i class="fa-solid fa-shield-halved"></i></div>
+                                <div class="room-info"><span class="room-name">Defensive Security Intro</span><span
+                                        class="room-cat def">D&eacute;fensif</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/computertypes" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon sys"><i class="fa-solid fa-computer"></i></div>
+                                <div class="room-info"><span class="room-name">Computer Types</span><span
+                                        class="room-cat sys">Syst&egrave;me</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/operatingsystemsecurity"
+                                target="_blank" rel="noopener">
+                                <div class="room-icon sys"><i class="fa-brands fa-linux"></i></div>
+                                <div class="room-info"><span class="room-name">OS Security</span><span
+                                        class="room-cat sys">Syst&egrave;me</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/searchskills" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon intro"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                <div class="room-info"><span class="room-name">Search Skills</span><span
+                                        class="room-cat intro">OSINT</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/databasesqlbasics" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon web"><i class="fa-solid fa-database"></i></div>
+                                <div class="room-info"><span class="room-name">Database &amp; SQL Basics</span><span
+                                        class="room-cat web">Web</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/cryptographyconcepts" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon off"><i class="fa-solid fa-key"></i></div>
+                                <div class="room-info"><span class="room-name">Cryptography Concepts</span><span
+                                        class="room-cat off">Crypto</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/becomeahacker" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon off"><i class="fa-solid fa-user-secret"></i></div>
+                                <div class="room-info"><span class="room-name">Become a Hacker</span><span
+                                        class="room-cat off">Offensif</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/becomeadefender" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon def"><i class="fa-solid fa-shield"></i></div>
+                                <div class="room-info"><span class="room-name">Become a Defender</span><span
+                                        class="room-cat def">D&eacute;fensif</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/whiterose" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon off"><i class="fa-solid fa-person-running"></i></div>
+                                <div class="room-info"><span class="room-name">White Rose</span><span
+                                        class="room-cat off">CTF</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/windowscommandline" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon sys"><i class="fa-brands fa-windows"></i></div>
+                                <div class="room-info"><span class="room-name">Windows Command Line</span><span
+                                        class="room-cat sys">Syst&egrave;me</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/windowspowershell" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon sys"><i class="fa-solid fa-terminal"></i></div>
+                                <div class="room-info"><span class="room-name">Windows PowerShell</span><span
+                                        class="room-cat sys">Syst&egrave;me</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                            <a class="room-card" href="https://tryhackme.com/room/linuxshells" target="_blank"
+                                rel="noopener">
+                                <div class="room-icon sys"><i class="fa-brands fa-linux"></i></div>
+                                <div class="room-info"><span class="room-name">Linux Shells</span><span
+                                        class="room-cat sys">Syst&egrave;me</span></div>
+                                <i class="fa-solid fa-check room-done"></i>
+                            </a>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== CERTIFICATIONS ==================== -->
+                <section id="certifications" class="page">
+                    <div class="page-header">
+                        <h1>Terminal <span>// Certifications_Vault</span></h1>
+                        <p class="page-subtitle">Encrypted storage for official documentation and credentials.</p>
+                    </div>
+
+                    <!-- Hacking Folder Simulation -->
+                    <div class="glass hacking-folder animate-on-scroll">
+                        <!-- Folder Header (Top Bar) -->
+                        <div class="folder-top-bar">
+                            <div class="folder-controls">
+                                <span class="ctrl-dot red"></span>
+                                <span class="ctrl-dot yellow"></span>
+                                <span class="ctrl-dot green"></span>
+                            </div>
+                            <div class="folder-path">/root/vault/credentials/THM_PreSecurity.enc</div>
+                            <div class="folder-lock"><i class="fa-solid fa-lock"></i> AES-256</div>
+                        </div>
+
+                        <!-- Folder Body -->
+                        <div class="folder-body">
+                            <!-- Left Side: ASCII Art & File Info -->
+                            <div class="folder-side-left">
+                                <pre class="ascii-file">
+  _________________
+ |                 |
+ |  CERTIFICATION  |
+ |   FILE_SYSTEM   |
+ |_________________|
+ |  CLASSIFIED     |
+ |  LEVEL: ROOT    |
+ |_________________|
+                            </pre>
+
+                                <div class="file-stats">
+                                    <div class="stat-row"><span>FILE:</span> <span class="hl">THMCertif.pdf</span></div>
+                                    <div class="stat-row"><span>SIZE:</span> <span>1.2 MB</span></div>
+                                    <div class="stat-row"><span>ISSUER:</span> <span class="hl-cyan">TryHackMe</span>
+                                    </div>
+                                    <div class="stat-row"><span>DATE:</span> <span>[ENCRYPTED]</span></div>
+                                    <div class="stat-row"><span>SHA256:</span> <span
+                                            class="hash-text">b8a9...4f1c</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Right Side: Content & Actions -->
+                            <div class="folder-side-right">
+                                <div class="auth-box">
+                                    <div class="auth-header">
+                                        <i class="fa-solid fa-fingerprint"></i>
+                                        <h3>IDENTITY VERIFIED</h3>
+                                    </div>
+                                    <p class="auth-msg">Access granted to user <span class="hl-red">root</span>. The
+                                        requested credential file has been decrypted and is ready for extraction.</p>
+
+                                    <div class="credential-details">
+                                        <h4>Pre-Security Path Completion</h4>
+                                        <p>Networking &middot; Linux Fundamentals &middot; Web Mechanics</p>
+                                        <div class="progress-wrap">
+                                            <div class="progress-label"><span>Verification</span><span
+                                                    class="hl-green">100%</span></div>
+                                            <div class="prog-bar">
+                                                <div class="prog-fill green" style="width:100%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="folder-actions">
+                                        <a href="THMCertif.pdf" target="_blank" class="cyber-btn primary">
+                                            <span class="btn-glitch"></span>
+                                            <i class="fa-solid fa-print"></i> EXTRACT PDF
+                                        </a>
+                                        <button class="cyber-btn secondary disabled">
+                                            <i class="fa-solid fa-key"></i> VIEW PGP KEY
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Certificates (Timeline representation in a minimal grid) -->
+                    <div class="grid grid-2 animate-on-scroll" style="margin-top:1.5rem">
+                        <div class="glass widget">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-shield-cat"></i> CompTIA PenTest+</h3>
+                                <span class="status-badge warn">IN PROGRESS</span>
+                            </div>
+                            <p style="color:var(--text2); font-size:0.85rem; margin-bottom:1rem">Industry standard
+                                pentest certification focusing on vulnerability assessment and management.</p>
+                            <div class="prog-bar">
+                                <div class="prog-fill yellow" style="width:60%"></div>
+                            </div>
+                            <div
+                                style="display:flex; justify-content:space-between; margin-top:0.4rem; font-family:var(--mono); font-size:0.75rem; color:var(--text3)">
+                                <span>Phase 3: Exploitation</span>
+                                <span>60%</span>
+                            </div>
+                        </div>
+
+                        <div class="glass widget">
+                            <div class="widget-header">
+                                <h3><i class="fa-solid fa-ghost"></i> Red Teaming</h3>
+                                <span class="status-badge error">LOCKED</span>
+                            </div>
+                            <p style="color:var(--text3); font-size:0.85rem; margin-bottom:1rem">Advanced persistent
+                                threat simulation, stealth operations, and evasion tactics.</p>
+                            <div class="prog-bar">
+                                <div class="prog-fill" style="width:0; background:var(--text3)"></div>
+                            </div>
+                            <div
+                                style="display:flex; justify-content:space-between; margin-top:0.4rem; font-family:var(--mono); font-size:0.75rem; color:var(--text3)">
+                                <span>Prerequisite Required</span>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== CONTACT ==================== -->
+                <section id="contact" class="page">
+                    <div class="page-header">
+                        <h1>Terminal <span>// Contact</span></h1>
+                        <p class="page-subtitle">Initiate secure transmission.</p>
+                    </div>
+
+                    <div class="terminal-contact-wrapper animate-on-scroll reveal-up">
+                        <div class="terminal-header">
+                            <span class="btn-red"></span>
+                            <span class="btn-yellow"></span>
+                            <span class="btn-green"></span>
+                            <span class="title">SECURE_COMMS.EXE</span>
+                        </div>
+                        <div class="terminal-body" id="contact-terminal-body">
+                            <p class="term-text">> INITIALIZING SECURE CONNECTION... <span id="client-ip-display">[IP:
+                                    127.0.0.1]</span></p>
+                            <p class="term-text">> <span class="hl-green">STATUS: CONNECTED</span></p>
+                            <p class="term-text">> AWAITING INPUT_</p>
+
+                            <form id="cyber-contact-form" class="cyber-form mt-2">
+                                <!-- Honeypot for bots -->
+                                <input type="text" name="honeypot" id="contact-honeypot" style="display:none"
+                                    tabindex="-1" autocomplete="off">
+
+                                <div class="form-group">
+                                    <label for="contact-name">[NOM D'UTILISATEUR]</label>
+                                    <input type="text" id="contact-name" name="name" class="cyber-input"
+                                        placeholder="> Entrez votre indicatif_" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="contact-email">[ADRESSE EMAIL]</label>
+                                    <input type="email" id="contact-email" name="email" class="cyber-input"
+                                        placeholder="> Canal de communication_" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="contact-msg">[MESSAGE] <span class="char-count"
+                                            id="msg-char-count">[DATA: 0/500 bytes]</span></label>
+                                    <textarea id="contact-msg" name="message" class="cyber-input" rows="5"
+                                        maxlength="500" placeholder="> Charge utile_ du message" required></textarea>
+                                </div>
+
+                                <div id="form-status" class="form-status"></div>
+
+                                <button type="submit" id="contact-submit-btn" class="cyber-submit-btn">
+                                    <span class="glitch-text" data-text="&gt; TRANSMETTRE LE PAQUET">&gt; TRANSMETTRE LE
+                                        PAQUET</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+            </div><!-- end scrollable-content -->
+        </main>
+    </div><!-- end app-container -->
+
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="js/map.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/contact.js"></script>
 </body>
+
 </html>
