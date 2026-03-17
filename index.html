@@ -118,10 +118,25 @@
                     <input type="text" placeholder="execute command...">
                 </div>
                 <div class="topbar-right">
-                    <button class="icon-btn" aria-label="Notifications">
-                        <i class="fa-solid fa-bell"></i>
-                        <span class="notif-dot"></span>
-                    </button>
+                    <div class="notif-wrapper">
+                        <button class="icon-btn" id="notif-btn" aria-label="Notifications">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="notif-dot"></span>
+                        </button>
+                        <div class="notif-dropdown" id="notif-dropdown">
+                            <div class="notif-header">
+                                <h3><i class="fa-solid fa-signal"></i> System Broadcast</h3>
+                            </div>
+                            <div class="notif-body">
+                                <p class="notif-quote">"Tu es la seule constante dans un ocean de variable."</p>
+                                <span class="notif-meta">Signature: Mr_Robot</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="https://alexdevweb80.github.io/ProjectNexus/" target="_blank" rel="noopener noreferrer"
+                        class="icon-btn" aria-label="Project Nexus">
+                        <i class="fa-solid fa-link"></i>
+                    </a>
                     <button class="icon-btn" id="theme-btn" aria-label="Toggle theme">
                         <i class="fa-solid fa-moon"></i>
                     </button>
@@ -142,19 +157,33 @@
                             <h2 class="welcome-title">Passionné de cybersécurité, je consolide mes compétences sur
                                 TryHackMe</h2>
                             <div class="welcome-desc">
-                                <p class="desc-intro">> Passionné par les défis techniques et la protection du numérique, j'ai choisi d'approfondir mes compétences en cybersécurité de manière concrète et pratique. Je consacre une grande partie de mon temps à la plateforme <span class="hl-cyan">TryHackMe</span>.</p>
+                                <p class="desc-intro">> Passionné par les défis techniques et la protection du
+                                    numérique, j'ai choisi d'approfondir mes compétences en cybersécurité de manière
+                                    concrète et pratique. Je consacre une grande partie de mon temps à la plateforme
+                                    <span class="hl-cyan">TryHackMe</span>.
+                                </p>
 
-                                <p class="desc-core">Pour moi, TryHackMe est bien plus qu'un simple site d'entraînement. C'est un véritable terrain de jeu qui me permet d'acquérir des compétences solides et opérationnelles en :</p>
+                                <p class="desc-core">Pour moi, TryHackMe est bien plus qu'un simple site d'entraînement.
+                                    C'est un véritable terrain de jeu qui me permet d'acquérir des compétences solides
+                                    et opérationnelles en :</p>
 
                                 <ul class="cyber-list">
-                                    <li><i class="fa-solid fa-satellite-dish"></i> Reconnaissance et collecte d'informations.</li>
-                                    <li><i class="fa-solid fa-bug"></i> Exploitation de vulnérabilités (Web, système, réseau).</li>
-                                    <li><i class="fa-solid fa-microscope"></i> Analyse de logs et réponse à incident.</li>
-                                    <li><i class="fa-solid fa-shield-virus"></i> Compréhension des mécanismes de défense.</li>
+                                    <li><i class="fa-solid fa-satellite-dish"></i> Reconnaissance et collecte
+                                        d'informations.</li>
+                                    <li><i class="fa-solid fa-bug"></i> Exploitation de vulnérabilités (Web, système,
+                                        réseau).</li>
+                                    <li><i class="fa-solid fa-microscope"></i> Analyse de logs et réponse à incident.
+                                    </li>
+                                    <li><i class="fa-solid fa-shield-virus"></i> Compréhension des mécanismes de
+                                        défense.</li>
                                 </ul>
 
-                                <p class="desc-outro">Grâce à ses parcours guidés ('Paths') et ses 'Rooms' challenges, je développe une méthodologie rigoureuse et une culture technique essentielle pour évoluer dans le monde de la cybersécurité. 
-                                <br><br><span class="hl-green">></span> Je suis désormais prêt à mettre ces compétences en pratique et à continuer d'apprendre au sein d'une équipe dynamique.</p>
+                                <p class="desc-outro">Grâce à ses parcours guidés ('Paths') et ses 'Rooms' challenges,
+                                    je développe une méthodologie rigoureuse et une culture technique essentielle pour
+                                    évoluer dans le monde de la cybersécurité.
+                                    <br><br><span class="hl-green">></span> Je suis désormais prêt à mettre ces
+                                    compétences en pratique et à continuer d'apprendre au sein d'une équipe dynamique.
+                                </p>
                             </div>
                             <div class="stats-row">
                                 <div class="stat-pill">

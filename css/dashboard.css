@@ -72,6 +72,10 @@ body.light-theme {
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     background: var(--bg);
     color: var(--text1);
@@ -521,6 +525,7 @@ img { display: block; }
     background: rgba(13,13,18,0.85);
     backdrop-filter: blur(8px);
     flex-shrink: 0;
+    z-index: 500;
 }
 
 .hamburger-btn {
@@ -594,6 +599,104 @@ img { display: block; }
 }
 
 .icon-btn:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
+
+.notif-dot {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 8px; height: 8px;
+    background: var(--red);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 8px var(--red);
+}
+
+/* Notification Dropdown */
+.notif-wrapper { position: relative; }
+
+.notif-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 320px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0, 229, 255, 0.15);
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notif-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.notif-dropdown::before {
+    content: '';
+    position: absolute;
+    top: -6px; right: 14px;
+    width: 12px; height: 12px;
+    background: var(--bg2);
+    border-left: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    transform: rotate(45deg);
+}
+
+.notif-header {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,229,255,0.03);
+}
+
+.notif-header h3 {
+    font-size: 0.8rem;
+    font-family: var(--mono);
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notif-body { padding: 18px 15px; }
+
+.notif-quote {
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: var(--sans);
+    line-height: 1.5;
+    margin-bottom: 12px;
+    font-style: italic;
+    text-align: center;
+}
+
+.notif-meta {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--text3);
+    text-align: right;
+    letter-spacing: 1px;
+}
+
+/* Mobile adjustments for dropdown */
+@media (max-width: 480px) {
+    .notif-dropdown {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        top: 70px;
+    }
+    .notif-dropdown::before { display: none; }
+}
 
 .notif-dot {
     position: absolute;
@@ -735,8 +838,24 @@ img { display: block; }
 /* -------------------------------------------------------
    8. DASHBOARD GRID
    ------------------------------------------------------- */
-.grid { display: grid; gap: 1.5rem; }
-.grid-2 { grid-template-columns: repeat(4, 1fr); align-items: stretch; }
+.grid { 
+    display: grid; 
+    gap: 1.5rem; 
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden; /* Prevent children from leaking */
+}
+
+.grid-2 { 
+    grid-template-columns: repeat(4, 1fr); 
+    align-items: stretch; 
+}
+
+/* Ensure grid children don't burst out */
+.grid > div {
+    min-width: 0;
+}
+
 .col-full { grid-column: 1 / -1; }
 
 /* -------------------------------------------------------
@@ -1755,6 +1874,10 @@ img { display: block; }
 /* -------------------------------------------------------
    15. RESPONSIVE
    ------------------------------------------------------- */
+@media (max-width: 1100px) {
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 1024px) {
     .map-stats-top { gap: 1rem; }
 }
@@ -1889,6 +2012,18 @@ img { display: block; }
 
     .sidebar-overlay { display: block; }
 
+    /* Fix glitch crypto overflow on mobile */
+    .glitch-crypto {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .glitch-crypto::before, .glitch-crypto::after {
+        clip-path: inset(0); /* Safer than clip: rect() for responsive overflow */
+    }
+
     .search-bar      { max-width: none; }
     .scrollable-content { padding: 1rem; }
     .grid-2          { grid-template-columns: 1fr; }
@@ -1952,6 +2087,30 @@ img { display: block; }
     .cyber-form .cyber-input { padding: 10px; font-size: 0.9rem; }
 }
 
+@media (max-width: 600px) {
+    .roadmap-container {
+        flex-direction: column;
+        gap: 2rem;
+        padding: 2rem 0;
+    }
+    .roadmap-line {
+        left: 50%;
+        top: 10%;
+        bottom: 10%;
+        width: 4px;
+        height: auto;
+        transform: translateX(-50%);
+    }
+    .roadmap-progress {
+        width: 4px !important;
+        height: 55%;
+        animation: advanceRoadmapVertical 3s ease-out forwards;
+    }
+    @keyframes advanceRoadmapVertical {
+        0%   { height: 0%; }
+        100% { height: 55%; }
+    }
+}
 @media (max-width: 480px) {
     .search-bar { display: none; }
     

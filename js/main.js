@@ -419,4 +419,26 @@
         }, 5000);
     });
 
+    /* --------------------------------------------------------
+       6. NOTIFICATION DROPDOWN TOGGLE
+       -------------------------------------------------------- */
+    var notifBtn = $('#notif-btn');
+    var notifDropdown = $('#notif-dropdown');
+
+    if (notifBtn && notifDropdown) {
+        notifBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            notifDropdown.classList.toggle('show');
+            /* Hide the dot when clicked */
+            var dot = $('.notif-dot', notifBtn);
+            if (dot) dot.style.display = 'none';
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                notifDropdown.classList.remove('show');
+            }
+        });
+    }
+
 })();
